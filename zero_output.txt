@@ -1,0 +1,40 @@
+﻿Total students: 119
+Students with 0 marks: 7
+
+================================================================================
+STUDENTS WITH 0 MARKS:
+================================================================================
+1311008: BISOI PRIYANSHU JITU
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311009: CHAITANYA VINAY AMBRE
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311020: MANASVI LAXMIKANTHA REDDY DAPPILI
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311021: MAYANK ARUN SHEJWAL
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311036: SAKSHAM PRAVIN PAYANGAN
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311037: SAYED ZAHEEN RIYAZUL HASAN
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+1311063: DIKSHA SHIRISH BHARAMBE
+  College: MU-0237: Terna Public Charitable Trust's Terna Engineering College
+  Result: FAILED
+
+
+================================================================================
+UNIQUE COLLEGES:
+================================================================================
+   70 students - MU-0237: Terna Public Charitable Trust's Terna Engineering College
+   49 students - MU-1331: MAEER'S Maharashtra Institute of Technology Thane

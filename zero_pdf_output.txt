@@ -1,0 +1,30 @@
+﻿
+================================================================================
+SEARCHING FOR SEAT 1311008
+================================================================================
+
+Found on page 6:
+    L14: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+>>> L15: 1311008 BISOI PRIYANSHU JITU Regular MALE (MU0341120250210225) MU-0237: Terna Public Charitable Trust's Terna Engineering College
+    L16: T1 ABS 15 P 11 P 15 P 10 P 19 P ABS 16 P
+    L17: O1 11 P 11 P 21 P
+    L18: MARK
+    L19: E1 2 0 F 0.0 9 0 F 0.0 2 0 F 0.0 11 0 F 0.0 1 0 F 0.0 27 P
+    L20: S
+    L21: FAILE
+    L22: I1 3 0 F 0.0 8 0 F 0.0 12 P 1 0 F 0.0 4 0 F 0.0 16 P ABS (225)
+
+================================================================================
+SEARCHING FOR SEAT 1311009
+================================================================================
+
+Found on page 6:
+    L36: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+>>> L37: 1311009 CHAITANYA VINAY AMBRE Regular MALE (MU0341120250210204) MU-0237: Terna Public Charitable Trust's Terna Engineering College
+    L38: T1 20 P 18 P 20 P 16 P 22 P 18 P 21 P 23 P
+    L39: O1 13 P 19 P 19 P
+    L40: MARK
+    L41: E1 24 P 28 P 17 0 F 0.0 16 0 F 0.0 15 0 F 0.0 19 P
+    L42: S
+    L43: FAILE
+    L44: I1 16 P 14 P 16 P 16 P 19 P 21 P ... P (430)

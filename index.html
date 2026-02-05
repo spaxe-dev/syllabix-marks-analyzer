@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Result Analyzer | Mumbai University</title>
+    <meta name="description" content="Analyze Mumbai University examination results - view pass percentage, median CGPA, subject toppers, and individual student percentile rankings">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <main class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">📊</span>
+                <div class="logo-text">
+                    <h1>Result Analyzer</h1>
+                    <span class="tagline">Mumbai University Examination Results</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <section id="upload-section" class="glass-card upload-section">
+            <div class="upload-content">
+                <div class="upload-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <h2>Upload Result PDF</h2>
+                <p class="upload-hint">Drag & drop your Mumbai University result PDF here, or click to browse</p>
+                <input type="file" id="file-input" accept=".pdf" hidden>
+                <button class="btn btn-primary" id="browse-btn">
+                    <span>Browse Files</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="upload-progress hidden" id="upload-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="progress-text">Processing PDF...</span>
+            </div>
+        </section>
+
+        <!-- Results Dashboard (Hidden initially) -->
+        <section id="results-dashboard" class="results-dashboard hidden">
+            <!-- File Info -->
+            <div class="file-info glass-card">
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                    <h3 id="file-name">Result File</h3>
+                    <span id="file-meta" class="file-meta">Processing...</span>
+                </div>
+                <button class="btn btn-secondary" id="new-file-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    New File
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon students">👥</div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="total-students">0</span>
+                        <span class="stat-label">Total Students</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-icon passed">✅</div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="passed-students">0</span>
+                        <span class="stat-label">Passed</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card highlight">
+                    <div class="stat-icon percentage">📈</div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="pass-percentage">0%</span>
+                        <span class="stat-label">Pass Rate</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-icon cgpa">🎯</div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="median-cgpa">0.00</span>
+                        <span class="stat-label">Median CGPA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="two-column">
+                <!-- Subject Toppers -->
+                <div class="glass-card toppers-section">
+                    <h2 class="section-title">
+                        <span class="title-icon">🏆</span>
+                        Subject Toppers
+                    </h2>
+                    <div class="toppers-list" id="toppers-list">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- CGPA Distribution Chart -->
+                <div class="glass-card chart-section">
+                    <h2 class="section-title">
+                        <span class="title-icon">📊</span>
+                        Grade Distribution
+                    </h2>
+                    <div class="chart-container">
+                        <canvas id="grade-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Search -->
+            <div class="glass-card search-section">
+                <h2 class="section-title">
+                    <span class="title-icon">🔍</span>
+                    Individual Student Analysis
+                </h2>
+                <div class="search-box">
+                    <input type="text" id="seat-search" placeholder="Enter Seat Number (e.g., 1311001)" maxlength="7">
+                    <button class="btn btn-primary" id="search-btn">Analyze</button>
+                </div>
+                <div id="student-result" class="student-result hidden">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- All Students Table -->
+            <div class="glass-card table-section">
+                <h2 class="section-title">
+                    <span class="title-icon">📋</span>
+                    All Students
+                </h2>
+                <div class="table-controls">
+                    <input type="text" id="table-filter" placeholder="Filter by name or seat number...">
+                    <select id="result-filter">
+                        <option value="all">All Results</option>
+                        <option value="pass">Passed Only</option>
+                        <option value="fail">Failed Only</option>
+                    </select>
+                </div>
+                <div class="table-wrapper">
+                    <table id="students-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Seat No</th>
+                                <th>Name</th>
+                                <th>Total Marks</th>
+                                <th>Result</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Built with ❤️ for Mumbai University Students</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

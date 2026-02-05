@@ -1,0 +1,13 @@
+﻿Page 39 has 47 lines
+
+--- Looking for 1311072 ---
+
+L016: "1311072 AADIT AVINASH AHIRE Regular MALE MU-1331: MAEER'S Maharashtra Institute of Technology Thane"
+
+
+--- Testing regex patterns ---
+
+Testing line 16: 1311072 AADIT AVINASH AHIRE Regular MALE MU-1331: MAEER'S Maharashtra Institute ...
+Pattern 1 (with ERN): None
+Pattern 2 (without ERN): <re.Match object; span=(0, 99), match="1311072 AADIT AVINASH AHIRE Regular MALE MU-1331:>
+  Groups: seat=1311072, name=AADIT AVINASH AHIRE, status=Regular, gender=MALE, rest=MU-1331: MAEER'S Maharashtra Institute of Technolo...

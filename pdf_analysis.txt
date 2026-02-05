@@ -1,0 +1,153 @@
+﻿Total pages: 63
+
+====================================================================================================
+PAGE 1
+====================================================================================================
+
+--- RAW TEXT (33 lines) ---
+L000: Jan 28, 2026
+L001: University Of Mumbai
+L002: Declaration Date:Jan 28, 2026
+L003: OFFICE REGISTER FOR THE Bachelor of Engineering( Electronics Engineering) ( Semester - I) ( NEP 2020 ) REGULAR EXAMINATION HELD IN DECEMBER 2025
+L004: PAGE : 1
+L005: (10411) : 10411 : Applied Mathematics-I (10412) : 10412 : Applied Physics (10413) : 10413 : Applied Chemistry
+L006: (10414) : 10414 : Engineering Mechanics (10415) : 10415 : Basic Electrical & Electronics Engineering (10416) : 10416 : Applied Physics Lab
+L007: (10417) : 10417 : Applied Chemistry Lab (10418) : 10418 : Engineering Mechanics Lab (10419) : 10419 : Basic Electrical & Electronics Engineering Lab
+L008: (10420) : 10420 : Professional and Communication Ethics (10421) : 10421 : Professional and Communication Ethics (10422) : 10422 : Engineering Workshop-I
+L009: (10423) : 10423 : C Programming (10424) : 10424 : Induction cum Universal Human Values
+L010: I1 (INTERNAL EXAMINATION) E1 (EXTERNAL EXAMINATION) T1 (TERM WORK) O1 (ORAL) TOTALF (TOTAL MARKS)
+L011: Course Code Course Title Course Credits
+L012: Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks
+L013: 10411 Applied Mathematics-I 3.00 16.00 40.00 24.00 60.00 10.00 25.00 ... ... 50.00 125.00
+L014: 10412 Applied Physics 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+L015: 10413 Applied Chemistry 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+L016: 10414 Engineering Mechanics 2.00 16.00 40.00 24.00 60.00 ... ... ... ... 40.00 100.00
+L017: 10415 Basic Electrical & Electronics Engineering 3.00 16.00 40.00 24.00 60.00 ... ... ... ... 40.00 100.00
+L018: 10416 Applied Physics Lab 0.50 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+L019: 10417 Applied Chemistry Lab 0.50 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+L020: 10418 Engineering Mechanics Lab 1.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+L021: 10419 Basic Electrical & Electronics Engineering Lab 1.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+L022: 10420 Professional and Communication Ethics 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+L023: 10421 Professional and Communication Ethics 1.00 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+L024: 10422 Engineering Workshop-I 1.00 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+L025: 10423 C Programming 2.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+L026: 10424 Induction cum Universal Human Values 2.00 10.00 25.00 ... ... ... ... ... ... 10.00 25.00
+L027: #:0.229; @:O.5042A/O.5043A/O.5044A; *:O.5045A; AA/ABS: ABSENT; P: SUCCESSFUL; F: UNSUCCESSFUL; E: EXMP CAN BE CLAIMED; ~: Dyslexia; +: MARKS CARRIED FORWARD; $: GRADE CARRIED FORWARD; RCC: O.5050; RPV: PROVISIONAL; NULL: NULL & VOID.;
+L028: ADC: ADMISSION CANCELLED; RR: RESERVED; C: CREDIT POINTS EARNED; G: GRADE POINTS; õC: SUM OF C; õCG: SUM OF CxG; SGPA: SEMESTER GRADE POINT AVERAGE= õCG / õC; CGPA: CUMULATIVE GRADE POINT AVERAGE; RR: RESERVED
+L029: ( NEP 2020 ) EXAMINATION HELD IN DECEMBER 2025
+L030: %Marks >=90 >=80 and <90 >=70 and <80 >=60 and <70 >=55 and <60 >=50 and <55 >=40 and <50 < 40
+L031: Grade O A+ A B+ B C D F
+L032: GRADE POINT 10 9 8 7 6 5 4 0
+
+--- TABLES FOUND: 1 ---
+
+Table 1 (16 rows x 13 cols):
+  R00: ['Course Code', 'Course Title', 'Course Credits', 'I1 (INTERNAL EXAMINATION)', None, 'E1 (EXTERNAL EXAMINATION)', None, 'T1 (TERM WORK)', None, 'O1 (ORAL)', None, 'TOTALF (TOTAL MARKS)', None]
+  R01: [None, None, None, 'Min Marks', 'Max Marks', 'Min Marks', 'Max Marks', 'Min Marks', 'Max Marks', 'Min Marks', 'Max Marks', 'Min Marks', 'Max Marks']
+  R02: ['10411', 'Applied Mathematics-I', '3.00', '16.00', '40.00', '24.00', '60.00', '10.00', '25.00', '...', '...', '50.00', '125.00']
+  R03: ['10412', 'Applied Physics', '2.00', '12.00', '30.00', '18.00', '45.00', '...', '...', '...', '...', '30.00', '75.00']
+  R04: ['10413', 'Applied Chemistry', '2.00', '12.00', '30.00', '18.00', '45.00', '...', '...', '...', '...', '30.00', '75.00']
+  R05: ['10414', 'Engineering Mechanics', '2.00', '16.00', '40.00', '24.00', '60.00', '...', '...', '...', '...', '40.00', '100.00']
+  R06: ['10415', 'Basic Electrical & Electronics Engineering', '3.00', '16.00', '40.00', '24.00', '60.00', '...', '...', '...', '...', '40.00', '100.00']
+  R07: ['10416', 'Applied Physics Lab', '0.50', '...', '...', '...', '...', '10.00', '25.00', '...', '...', '10.00', '25.00']
+  R08: ['10417', 'Applied Chemistry Lab', '0.50', '...', '...', '...', '...', '10.00', '25.00', '...', '...', '10.00', '25.00']
+  R09: ['10418', 'Engineering Mechanics Lab', '1.00', '...', '...', '...', '...', '10.00', '25.00', '10.00', '25.00', '20.00', '50.00']
+  R10: ['10419', 'Basic Electrical & Electronics Engineering Lab', '1.00', '...', '...', '...', '...', '10.00', '25.00', '10.00', '25.00', '20.00', '50.00']
+  R11: ['10420', 'Professional and Communication Ethics', '2.00', '12.00', '30.00', '18.00', '45.00', '...', '...', '...', '...', '30.00', '75.00']
+  R12: ['10421', 'Professional and Communication Ethics', '1.00', '...', '...', '...', '...', '10.00', '25.00', '...', '...', '10.00', '25.00']
+  R13: ['10422', 'Engineering Workshop-I', '1.00', '...', '...', '...', '...', '10.00', '25.00', '...', '...', '10.00', '25.00']
+  R14: ['10423', 'C Programming', '2.00', '...', '...', '...', '...', '10.00', '25.00', '10.00', '25.00', '20.00', '50.00']
+
+====================================================================================================
+PAGE 2
+====================================================================================================
+
+--- RAW TEXT (31 lines) ---
+L000: Jan 28, 2026
+L001: University Of Mumbai
+L002: Declaration Date:Jan 28, 2026
+L003: OFFICE REGISTER FOR THE Bachelor of Engineering( Electronics Engineering) ( Semester - I) ( NEP 2020 ) REGULAR EXAMINATION HELD IN DECEMBER 2025
+L004: PAGE : 2
+L005: MU-0237: TERNA PUBLIC CHARITABLE TRUST'S TERNA ENGINEERING COLLEGE
+L006: SEAT NO NAME STATUS GENDER ERN COLLEGE
+L007: 10411 : Applied 10412 : Applied 10413 : Applied 10414 : Engineering 10415 : Basic Electrical & 10416 : Applied Physics 10417 : Applied 10418 : Engineering 10419 : Basic 10420 : Professional and 10421 : Professional 10422 : Engineering 10423 : C Programming 10424 : Induction cum TOTAL RESUL REMAR
+L008: Mathematics-I (TERM Physics (THEORY) Chemistry (THEORY) Mechanics (THEORY) Electronics Engineering Lab (TERM WORK) Chemistry Lab (TERM Mechanics Lab (TERM Electrical & Communication Ethics and Communication Workshop-I (TERM (TERM WORK AND ORAL) Universal Human Values ( 800 ) T K
+L009: WORK) (THEORY) WORK) WORK) Electronics (THEORY) Ethics (TERM WORK) WORK AND ORAL) (THEORY) õC
+L010: Engineering Lab õCG õCG
+L011: (TERM WORK)
+L012: TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10)
+L013: ORAL (25/10) ORAL (25/10) ORAL (25/10)
+L014: External (60/24) External (45/18) External (45/18) External (60/24) External (60/24) External (45/18)
+L015: Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Internal(25/10)
+L016: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+L017: 1311001 AADITYA GORAKH JAGDALE Regular MALE (MU0341120250210215) MU-0237: Terna Public Charitable Trust's Terna Engineering College
+L018: T1 18 P 17 P 21 P 17 P 21 P 18 P 20 P 22 P
+L019: O1 11 P 18 P 17 P
+L020: E1 8 0 F 0.0 15 0 F 0.0 15 0 F 0.0 11 0 F 0.0 16 0 F 0.0 22 P MARKS
+L021: I1 11 0 F 0.0 13 P 19 P 8 0 F 0.0 17 P 20 P ... P (375) FAILED
+L022: 0.0000
+L023: TOT 37 0 F 3 0.0 28 0 F 2 0.0 34 0 F 2 0.0 19 0 F 2 0.0 33 0 F 3 0.0 17 7 B+ 0.5 3.5 21 9 A+ 0.5 4.5 28 6 B 1 6.0 39 8 A 1 8.0 42 6 B 2 12.0 18 8 A 1 8.0 20 9 A+ 1 9.0 39 8 A 2 16.0 ... 10 O 2 20.0 23 87.0
+L024: 0
+L025: #:0.229; @:O.5042A/O.5043A/O.5044A; *:O.5045A; AA/ABS: ABSENT; P: SUCCESSFUL; F: UNSUCCESSFUL; E: EXMP CAN BE CLAIMED; ~: Dyslexia; +: MARKS CARRIED FORWARD; $: GRADE CARRIED FORWARD; RCC: O.5050; RPV: PROVISIONAL; NULL: NULL & VOID.;
+L026: ADC: ADMISSION CANCELLED; RR: RESERVED; C: CREDIT POINTS EARNED; G: GRADE POINTS; õC: SUM OF C; õCG: SUM OF CxG; SGPA: SEMESTER GRADE POINT AVERAGE= õCG / õC; CGPA: CUMULATIVE GRADE POINT AVERAGE; RR: RESERVED
+L027: ( NEP 2020 ) EXAMINATION HELD IN DECEMBER 2025
+L028: %Marks >=90 >=80 and <90 >=70 and <80 >=60 and <70 >=55 and <60 >=50 and <55 >=40 and <50 < 40
+L029: Grade O A+ A B+ B C D F
+L030: GRADE POINT 10 9 8 7 6 5 4 0
+
+--- TABLES FOUND: 0 ---
+
+====================================================================================================
+PAGE 3
+====================================================================================================
+
+--- RAW TEXT (47 lines) ---
+L000: Jan 28, 2026
+L001: University Of Mumbai
+L002: Declaration Date:Jan 28, 2026
+L003: OFFICE REGISTER FOR THE Bachelor of Engineering( Electronics Engineering) ( Semester - I) ( NEP 2020 ) REGULAR EXAMINATION HELD IN DECEMBER 2025
+L004: PAGE : 3
+L005: SEAT NO NAME STATUS GENDER ERN COLLEGE
+L006: 10411 : Applied 10412 : Applied Physics 10413 : Applied 10414 : Engineering 10415 : Basic Electrical & 10416 : Applied Physics 10417 : Applied 10418 : Engineering 10419 : Basic Electrical 10420 : Professional and 10421 : Professional and 10422 : Engineering 10423 : C Programming 10424 : Induction cum TOTAL RESUL REMAR
+L007: Mathematics-I (TERM (THEORY) Chemistry (THEORY) Mechanics (THEORY) Electronics Engineering Lab (TERM WORK) Chemistry Lab (TERM Mechanics Lab (TERM & Electronics Communication Ethics Communication Ethics Workshop-I (TERM (TERM WORK AND ORAL) Universal Human Values ( 800 ) T K
+L008: WORK) (THEORY) WORK) WORK) Engineering Lab (TERM (THEORY) (TERM WORK) WORK AND ORAL) (THEORY) õC
+L009: WORK) õCG õCG
+L010: TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10)
+L011: ORAL (25/10) ORAL (25/10) ORAL (25/10)
+L012: External (60/24) External (45/18) External (45/18) External (60/24) External (60/24) External (45/18)
+L013: Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Internal(25/10)
+L014: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+L015: 1311002 AARTI DATTATRAY CHITALKAR Regular FEMALE (MU0341120250210206) MU-0237: Terna Public Charitable Trust's Terna Engineering College
+L016: T1 21 P 21 P 18 P 15 P 20 P 23 P 21 P 22 P
+L017: O1 11 P 16 P 17 P
+L018: E1 15 0 F 0.0 28 P 12 0 F 0.0 14 0 F 0.0 12 0 F 0.0 30 P MARKS
+L019: I1 29 P 18 P 23 P 14 0 F 0.0 24 P 28 P ... P (452) FAILED
+L020: 0.0000
+L021: TOT 65 0 F 3 0.0 46 7 B+ 2 14.0 35 0 F 2 0.0 28 0 F 2 0.0 36 0 F 3 0.0 21 9 A+ 0.5 4.5 18 8 A 0.5 4.0 26 5 C 1 5.0 36 8 A 1 8.0 58 8 A 2 16.0 23 10 O 1 10.0 21 9 A+ 1 9.0 39 8 A 2 16.0 ... 10 O 2 20.0 23 106.5
+L022: 0
+L023: SEAT NO NAME STATUS GENDER ERN COLLEGE
+L024: 10411 : Applied 10412 : Applied Physics 10413 : Applied 10414 : Engineering 10415 : Basic Electrical & 10416 : Applied Physics 10417 : Applied 10418 : Engineering 10419 : Basic Electrical 10420 : Professional and 10421 : Professional and 10422 : Engineering 10423 : C Programming 10424 : Induction cum TOTAL RESUL REMAR
+L025: Mathematics-I (TERM (THEORY) Chemistry (THEORY) Mechanics (THEORY) Electronics Engineering Lab (TERM WORK) Chemistry Lab (TERM Mechanics Lab (TERM & Electronics Communication Ethics Communication Ethics Workshop-I (TERM (TERM WORK AND ORAL) Universal Human Values ( 800 ) T K
+L026: WORK) (THEORY) WORK) WORK) Engineering Lab (TERM (THEORY) (TERM WORK) WORK AND ORAL) (THEORY) õC
+L027: WORK) õCG õCG
+L028: TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10)
+L029: ORAL (25/10) ORAL (25/10) ORAL (25/10)
+L030: External (60/24) External (45/18) External (45/18) External (60/24) External (60/24) External (45/18)
+L031: Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Internal(25/10)
+L032: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+L033: 1311003 ADITYA KARUNADASAN Regular MALE (MU0341120250210200) MU-0237: Terna Public Charitable Trust's Terna Engineering College
+L034: T1 20 P 21 P 21 P 19 P 23 P 20 P 20 P 21 P
+L035: O1 11 P 19 P 17 P
+L036: E1 12 0 F 0.0 21 P 10 0 F 0.0 8 0 F 0.0 10 0 F 0.0 21 P MARKS
+L037: I1 19 P 18 P 19 P 8 0 F 0.0 16 P 25 P ... P (399) FAILED
+L038: 0.0000
+L039: TOT 51 0 F 3 0.0 39 5 C 2 10.0 29 0 F 2 0.0 16 0 F 2 0.0 26 0 F 3 0.0 21 9 A+ 0.5 4.5 21 9 A+ 0.5 4.5 30 7 B+ 1 7.0 42 9 A+ 1 9.0 46 7 B+ 2 14.0 20 9 A+ 1 9.0 20 9 A+ 1 9.0 38 8 A 2 16.0 ... 10 O 2 20.0 23 103.0
+L040: 0
+L041: #:0.229; @:O.5042A/O.5043A/O.5044A; *:O.5045A; AA/ABS: ABSENT; P: SUCCESSFUL; F: UNSUCCESSFUL; E: EXMP CAN BE CLAIMED; ~: Dyslexia; +: MARKS CARRIED FORWARD; $: GRADE CARRIED FORWARD; RCC: O.5050; RPV: PROVISIONAL; NULL: NULL & VOID.;
+L042: ADC: ADMISSION CANCELLED; RR: RESERVED; C: CREDIT POINTS EARNED; G: GRADE POINTS; õC: SUM OF C; õCG: SUM OF CxG; SGPA: SEMESTER GRADE POINT AVERAGE= õCG / õC; CGPA: CUMULATIVE GRADE POINT AVERAGE; RR: RESERVED
+L043: ( NEP 2020 ) EXAMINATION HELD IN DECEMBER 2025
+L044: %Marks >=90 >=80 and <90 >=70 and <80 >=60 and <70 >=55 and <60 >=50 and <55 >=40 and <50 < 40
+L045: Grade O A+ A B+ B C D F
+L046: GRADE POINT 10 9 8 7 6 5 4 0
+
+--- TABLES FOUND: 0 ---

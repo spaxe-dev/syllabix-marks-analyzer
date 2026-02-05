@@ -1,0 +1,53 @@
+﻿Lines containing potential student records (7-digit number at start):
+  L16: 1311072 AADIT AVINASH AHIRE Regular MALE MU-1331: MAEER'S Maharashtra ...
+  L34: 1311073 AARYA TUSHAR MARCHANDE Regular FEMALE MU-1331: MAEER'S Maharas...
+
+
+All lines on page 39:
+L00: 'Jan 28, 2026'
+L01: 'University Of Mumbai'
+L02: 'Declaration Date:Jan 28, 2026'
+L03: 'OFFICE REGISTER FOR THE Bachelor of Engineering( Electronics Engineering) ( Semester - I) ( NEP 202
+L04: 'PAGE : 39'
+L05: 'SEAT NO NAME STATUS GENDER ERN COLLEGE'
+L06: '10411 : Applied 10412 : Applied 10413 : Applied 10414 : Engineering 10415 : Basic Electrical 10416 
+L07: 'Mathematics-I (TERM Physics (THEORY) Chemistry (THEORY) Mechanics (THEORY) & Electronics Lab (TERM 
+L08: 'WORK) Engineering (THEORY) WORK) WORK) Engineering Lab (TERM Ethics (THEORY) Ethics (TERM WORK) WOR
+L09: 'WORK)'
+L10: 'TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK
+L11: 'ORAL (25/10) ORAL (25/10) ORAL (25/10)'
+L12: 'External (60/24) External (45/18) External (45/18) External (60/24) External (60/24) External (45/1
+L13: 'Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Int
+L14: 'TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G 
+L15: '(MU0341120250210156'
+L16: "1311072 AADIT AVINASH AHIRE Regular MALE MU-1331: MAEER'S Maharashtra Institute of Technology Thane
+L17: ')'
+L18: 'T1 16 P 14 P 20 P 17 P 23 P 22 P 19 P 18 P'
+L19: 'O1 21 P 22 P 23 P'
+L20: 'E1 24 P 34 P 18 P 26 P 24 P 29 P MARKS'
+L21: 'I1 26 P 19 P 18 P 29 P 25 P 24 P ... P (511) PASS'
+L22: 'TOT 66 5 C 3 15.0 53 8 A 2 16.0 36 4 D 2 8.0 55 6 B 2 12.0 49 4 D 3 12.0 14 6 B 0.5 3.0 20 9 A+ 0.5
+L23: 'SEAT NO NAME STATUS GENDER ERN COLLEGE'
+L24: '10411 : Applied 10412 : Applied 10413 : Applied 10414 : Engineering 10415 : Basic Electrical 10416 
+L25: 'Mathematics-I (TERM Physics (THEORY) Chemistry (THEORY) Mechanics (THEORY) & Electronics Lab (TERM 
+L26: 'WORK) Engineering (THEORY) WORK) WORK) Engineering Lab (TERM Ethics (THEORY) Ethics (TERM WORK) WOR
+L27: 'WORK)'
+L28: 'TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK (25/10) TERM WORK
+L29: 'ORAL (25/10) ORAL (25/10) ORAL (25/10)'
+L30: 'External (60/24) External (45/18) External (45/18) External (60/24) External (60/24) External (45/1
+L31: 'Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Int
+L32: 'TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G 
+L33: '(MU0341120250210178'
+L34: "1311073 AARYA TUSHAR MARCHANDE Regular FEMALE MU-1331: MAEER'S Maharashtra Institute of Technology 
+L35: ')'
+L36: 'T1 21 P 19 P 21 P 23 P 17 P 22 P 20 P 19 P'
+L37: 'O1 19 P 12 P 18 P'
+L38: 'E1 21 0 F 0.0 2 0 F 0.0 14 0 F 0.0 3 0 F 0.0 14 0 F 0.0 27 P MARKS'
+L39: 'I1 7 0 F 0.0 15 P 16 P 16 P 9 0 F 0.0 13 P ... P (368) FAILED'
+L40: 'TOT 49 0 F 3 0.0 17 0 F 2 0.0 30 0 F 2 0.0 19 0 F 2 0.0 23 0 F 3 0.0 19 8 A 0.5 4.0 21 9 A+ 0.5 4.5
+L41: '#:0.229; @:O.5042A/O.5043A/O.5044A; *:O.5045A; AA/ABS: ABSENT; P: SUCCESSFUL; F: UNSUCCESSFUL; E: E
+L42: 'ADC: ADMISSION CANCELLED; RR: RESERVED; C: CREDIT POINTS EARNED; G: GRADE POINTS; õC: SUM OF C; õCG
+L43: '( NEP 2020 ) EXAMINATION HELD IN DECEMBER 2025'
+L44: '%Marks >=90 >=80 and <90 >=70 and <80 >=60 and <70 >=55 and <60 >=50 and <55 >=40 and <50 < 40'
+L45: 'Grade O A+ A B+ B C D F'
+L46: 'GRADE POINT 10 9 8 7 6 5 4 0'

@@ -1,0 +1,71 @@
+﻿PAGE 1 - COURSE INFO:
+================================================================================
+Feb 05, 2026
+University Of Mumbai
+Declaration Date:Feb 05, 2026
+OFFICE REGISTER FOR THE Bachelor of Engineering( Computer Science and Engineering) ( Semester - I) ( NEP 2020 ) REGULAR EXAMINATION HELD IN DECEMBER 2025
+PAGE : 1
+(10411) : 10411 : Applied Mathematics-I (10412) : 10412 : Applied Physics (10413) : 10413 : Applied Chemistry
+(10414) : 10414 : Engineering Mechanics (10415) : 10415 : Basic Electrical & Electronics Engineering (10416) : 10416 : Applied Physics Lab
+(10417) : 10417 : Applied Chemistry Lab (10418) : 10418 : Engineering Mechanics Lab (10419) : 10419 : Basic Electrical & Electronics Engineering Lab
+(10420) : 10420 : Professional and Communication Ethics (10421) : 10421 : Professional and Communication Ethics (10422) : 10422 : Engineering Workshop-I
+(10423) : 10423 : C Programming (10424) : 10424 : Induction cum Universal Human Values
+I1 (INTERNAL EXAMINATION) E1 (EXTERNAL EXAMINATION) T1 (TERM WORK) O1 (ORAL) TOTALF (TOTAL MARKS)
+Course Code Course Title Course Credits
+Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks Min Marks Max Marks
+10411 Applied Mathematics-I 3.00 16.00 40.00 24.00 60.00 10.00 25.00 ... ... 50.00 125.00
+10412 Applied Physics 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+10413 Applied Chemistry 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+10414 Engineering Mechanics 2.00 16.00 40.00 24.00 60.00 ... ... ... ... 40.00 100.00
+10415 Basic Electrical & Electronics Engineering 3.00 16.00 40.00 24.00 60.00 ... ... ... ... 40.00 100.00
+10416 Applied Physics Lab 0.50 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+10417 Applied Chemistry Lab 0.50 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+10418 Engineering Mechanics Lab 1.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+10419 Basic Electrical & Electronics Engineering Lab 1.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+10420 Professional and Communication Ethics 2.00 12.00 30.00 18.00 45.00 ... ... ... ... 30.00 75.00
+10421 Professional and Communication Ethics 1.00 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+10422 Engineering Workshop-I 1.00 ... ... ... ... 10.00 25.00 ... ... 10.00 25.00
+10423 C Programming 2.00 ... ... ... ... 10.00 25.00 10.00 25.00 20.00 50.00
+10424 Induction cum Universal Human Values 2.00 10.00 25.00 ... ... ... ... ... ... 10.00 25.00
+#:0.229; @:O.5042A/O.5043A/O.5044A; *:O.5045A; AA/ABS: ABSENT; P: SUCCESSFUL; F: UNSUCCESSFUL; E: EXMP CAN BE CLAIMED; ~: Dyslexia; +: MARKS CARRIED FORWARD; $: GRADE CARRIED FORWARD; RCC: O.5050; RPV: PROVISIONAL; NULL: NULL & VOID.;
+ADC: ADMISSION CANCELLED; RR: RESERVED; C: CREDIT POINTS EARNED; G: GRADE POINTS; õC: SUM OF C; õCG: SUM OF CxG; SGPA: SEMESTER GRADE POINT AVERAGE= õCG / õC; CGPA: CUMULATIVE GRADE POINT AVERAGE; RR: RESERVED
+( NEP 2020 ) EXAMINATION HELD IN DECEMBER 2025
+%Marks >=90 >=80 and <90 >=70 and <80 >=60 and <70 >=55 and <60 >=50 and <55 >=40 and <50 < 40
+Grade O A+ A B+ B C D F
+GRADE POINT 10 9 8 7 6 5 4 0
+
+
+================================================================================
+ANALYZING STUDENT 1141182 TOT LINE:
+================================================================================
+
+Found 13 subjects:
+py : Traceback (most recent call last):
+At line:1 char:1
++ py debug_cs2.py 2>&1 | Out-File 
+-Encoding UTF8 cs2_output.txt
++ ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSp    
+ecified: (Traceback (most recen    t call 
+last)::String) [], Remot    eException
+    + FullyQualifiedErrorId : Nativ    
+eCommandError
+ 
+  File "D:\Projects\stats\debug_cs2.py", 
+line 30, in <module>
+    print(f"  Subject {i}: {total} marks, 
+Grade {grade}, Credits {credits} - 
+{status}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^
+  File 
+"C:\Python313\Lib\encodings\cp1252.py", 
+line 19, in encode
+    return codecs.charmap_encode(input,self
+.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't 
+encode character '\u2713' in position 44: 
+character maps to <undefined>

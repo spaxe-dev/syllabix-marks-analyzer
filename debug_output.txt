@@ -1,0 +1,16 @@
+﻿
+================================================================================
+FOUND ON PAGE 39
+================================================================================
+
+Context around seat 1311072:
+    L014: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+    L015: (MU0341120250210156
+>>> L016: 1311072 AADIT AVINASH AHIRE Regular MALE MU-1331: MAEER'S Maharashtra Institute of Technology Thane
+    L017: )
+    L018: T1 16 P 14 P 20 P 17 P 23 P 22 P 19 P 18 P
+    L019: O1 21 P 22 P 23 P
+    L020: E1 24 P 34 P 18 P 26 P 24 P 29 P MARKS
+    L021: I1 26 P 19 P 18 P 29 P 25 P 24 P ... P (511) PASS
+    L022: TOT 66 5 C 3 15.0 53 8 A 2 16.0 36 4 D 2 8.0 55 6 B 2 12.0 49 4 D 3 12.0 14 6 B 0.5 3.0 20 9 A+ 0.5 4.5 38 8 A 1 8.0 45 10 O 1 10.0 53 8 A 2 16.0 22 9 A+ 1 9.0 19 8 A 1 8.0 41 9 A+ 2 18.0 ... 10 O 2 20.0 23 159.5 6.93478
+    L023: SEAT NO NAME STATUS GENDER ERN COLLEGE
