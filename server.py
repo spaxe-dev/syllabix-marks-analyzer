@@ -41,6 +41,13 @@ def serve_static(path):
 def parse_result_pdf():
     """Parse uploaded PDF and return structured data"""
     try:
+        # Password Check
+        required_password = os.environ.get('UPLOAD_PASSWORD', 'syllabix')
+        provided_password = request.headers.get('X-Upload-Password')
+        
+        if provided_password != required_password:
+             return jsonify({'error': 'Invalid Access Password'}), 401
+
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
         

@@ -4,6 +4,7 @@ import gsap from 'gsap'
 export default function Upload({ onFileProcessed }) {
     const [isDragging, setIsDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
+    const [accessCode, setAccessCode] = useState('')
     const fileInputRef = useRef(null)
     const cardRef = useRef(null)
     const iconRef = useRef(null)
@@ -73,7 +74,13 @@ export default function Upload({ onFileProcessed }) {
         formData.append('file', file)
         try {
             const apiUrl = import.meta.env.VITE_API_URL || ''
-            const res = await fetch(`${apiUrl}/api/parse`, { method: 'POST', body: formData })
+            const res = await fetch(`${apiUrl}/api/parse`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Upload-Password': accessCode
+                }
+            })
             if (!res.ok) throw new Error((await res.json()).error || 'Processing failed')
             onFileProcessed(await res.json(), file.name)
         } catch (err) {
@@ -137,7 +144,24 @@ export default function Upload({ onFileProcessed }) {
                             <p ref={textRef} className="font-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 1.85rem)', marginBottom: '6px' }}>
                                 Drop your <em className="shimmer-text" style={{ fontStyle: 'italic' }}>result PDF</em>
                             </p>
-                            <p ref={subRef} style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>or click anywhere to browse</p>
+                            <p ref={subRef} style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '24px' }}>or click anywhere to browse</p>
+
+                            {/* Access Code Input */}
+                            <input
+                                type="password"
+                                placeholder="Access Code"
+                                value={accessCode}
+                                onClick={(e) => e.stopPropagation()} // Prevent triggering file input
+                                onChange={(e) => setAccessCode(e.target.value)}
+                                style={{
+                                    background: 'var(--color-surface-2)', border: '1px solid var(--color-border)',
+                                    borderRadius: 'var(--radius-sm)', padding: '8px 12px', color: 'var(--color-text)',
+                                    fontSize: '13px', width: '140px', textAlign: 'center', outline: 'none',
+                                    transition: 'border-color 0.2s'
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--color-accent)'}
+                                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                            />
                         </div>
                     </div>
                 )}
