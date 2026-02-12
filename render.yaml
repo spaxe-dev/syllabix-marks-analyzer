@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: syllabix
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn server:app -c gunicorn_config.py"
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.11
+      - key: NODE_VERSION
+        value: 20.10.0
