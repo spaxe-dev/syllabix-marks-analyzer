@@ -1,0 +1,6 @@
+flask
+flask-cors
+pdfplumber
+gunicorn
+werkzeug
+openpyxl
