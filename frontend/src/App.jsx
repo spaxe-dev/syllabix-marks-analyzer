@@ -20,8 +20,6 @@ function App() {
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
 
-
-
     // Logo text
     if (logoRef.current) {
       gsap.set(logoRef.current, { opacity: 0, y: 20 })
@@ -63,16 +61,44 @@ function App() {
 
   const loadCachedResults = async () => {
     try {
-      const res = await fetch('/api/cache')
+      // Try static index first (fastest, no server wake)
+      const staticRes = await fetch('/data/index.json')
+      if (staticRes.ok) {
+        setCachedResults(await staticRes.json())
+        return
+      }
+
+      // Fallback to API (wakes server)
+      const apiUrl = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${apiUrl}/api/cache`)
       if (res.ok) setCachedResults(await res.json())
-    } catch (e) { console.error('Cache load failed:', e) }
+    } catch (e) {
+      console.error('Cache load failed:', e)
+      // Try API if static failed completely
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || ''
+        const res = await fetch(`${apiUrl}/api/cache`)
+        if (res.ok) setCachedResults(await res.json())
+      } catch (err) { console.error('API cache load failed:', err) }
+    }
   }
 
   const handleFileProcessed = (data, name) => { setResultData(data); setFileName(name) }
 
   const handleLoadCached = async (hash) => {
     try {
-      const res = await fetch(`/api/results/${hash}`)
+      // Try static file first
+      const staticRes = await fetch(`/data/${hash}.json`)
+      if (staticRes.ok) {
+        const data = await staticRes.json()
+        setResultData(data)
+        setFileName(data.meta?.filename || 'Cached Result')
+        return
+      }
+
+      // Fallback to API
+      const apiUrl = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${apiUrl}/api/results/${hash}`)
       if (!res.ok) throw new Error('Load failed')
       const data = await res.json()
       setResultData(data)

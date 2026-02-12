@@ -1,12 +1,24 @@
-
+# Python
 __pycache__/
 *.pyc
-*.txt
-!requirements.txt
-*.pdf
-*.csv
-*.json
-!package.json
-!package-lock.json
+venv/
+.env
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Project Data
+# Ignore dynamic cache folder (server handles this)
 cache/
+# Ignore local PDFs
+*.pdf
+# Ignore local outputs
+parsed_results.json
 dev_scripts/
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/

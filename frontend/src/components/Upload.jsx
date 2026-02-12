@@ -72,7 +72,8 @@ export default function Upload({ onFileProcessed }) {
         const formData = new FormData()
         formData.append('file', file)
         try {
-            const res = await fetch('/api/parse', { method: 'POST', body: formData })
+            const apiUrl = import.meta.env.VITE_API_URL || ''
+            const res = await fetch(`${apiUrl}/api/parse`, { method: 'POST', body: formData })
             if (!res.ok) throw new Error((await res.json()).error || 'Processing failed')
             onFileProcessed(await res.json(), file.name)
         } catch (err) {
