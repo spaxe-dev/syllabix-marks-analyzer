@@ -45,7 +45,7 @@ export default function Dashboard({ data, fileName, onReset }) {
       `}</style>
 
             {/* File header bar */}
-            <div ref={headerRef} className="card" style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+            <div ref={headerRef} className="card" style={{ padding: '20px clamp(16px, 5vw, 24px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0 }}>
                     <div style={{
                         width: '42px', height: '42px', borderRadius: 'var(--radius-sm)',

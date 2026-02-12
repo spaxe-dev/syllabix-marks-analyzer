@@ -161,10 +161,10 @@ function App() {
     <>
       <FloatingShapes />
 
-      <div className="relative z-10 min-h-screen" style={{ padding: '48px clamp(24px, 5vw, 80px)' }}>
+      <div className="relative z-10 min-h-screen" style={{ padding: 'clamp(32px, 5vh, 48px) clamp(20px, 5vw, 80px)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           {/* Header */}
-          <header style={{ marginBottom: '56px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <header style={{ marginBottom: 'clamp(32px, 5vh, 56px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
             <div>
               {/* Logo */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
@@ -172,7 +172,7 @@ function App() {
                 <h1
                   ref={logoRef}
                   style={{
-                    fontSize: 'clamp(3.5rem, 6vw, 4.5rem)',
+                    fontSize: 'clamp(2.5rem, 10vw, 4.5rem)',
                     fontFamily: "'Syne', sans-serif",
                     fontWeight: 800,
                     letterSpacing: '-0.04em',

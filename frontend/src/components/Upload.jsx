@@ -99,7 +99,7 @@ export default function Upload({ onFileProcessed }) {
                 onClick={() => fileInputRef.current?.click()}
                 className="card"
                 style={{
-                    cursor: 'pointer', textAlign: 'center', padding: '72px 40px',
+                    cursor: 'pointer', textAlign: 'center', padding: 'clamp(40px, 8vh, 72px) clamp(20px, 5vw, 40px)',
                     perspective: '800px', transformStyle: 'preserve-3d',
                     ...(isDragging ? {
                         borderColor: 'var(--color-accent)',
