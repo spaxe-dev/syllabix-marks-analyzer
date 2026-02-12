@@ -230,7 +230,7 @@ function App() {
               </span>
             </div>
             <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontWeight: 500 }}>
-              Drop a PDF to get started
+              Made by Aadit
             </p>
           </footer>
         </div>
