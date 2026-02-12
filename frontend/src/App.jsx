@@ -19,18 +19,26 @@ function App() {
   // Handle Browser Navigation (Path & Back Button)
   useEffect(() => {
     const handlePopState = (event) => {
-      // If we go back to root path, clear results
-      if (window.location.pathname === '/') {
+      // If we go back to home path, clear results
+      const path = window.location.pathname
+      if (path === '/home' || path === '/') {
         setResultData(null)
         setFileName('')
         loadCachedResults()
       }
     }
 
-    // Check path on initial load
-    if (window.location.pathname === '/results' && !resultData) {
+    // Initial Path Logic
+    const path = window.location.pathname
+
+    // Redirect root to /home
+    if (path === '/') {
+      window.history.replaceState(null, '', '/home')
+    }
+    // Check path on initial load for /results
+    else if (path === '/results' && !resultData) {
       // If on /results but no data, redirect to home
-      window.history.replaceState(null, '', '/')
+      window.history.replaceState(null, '', '/home')
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -141,8 +149,8 @@ function App() {
     if (window.history.state?.hasResult) {
       window.history.back()
     } else {
-      // Fallback manual reset
-      window.history.replaceState(null, '', '/')
+      // Fallback manual reset to home
+      window.history.replaceState(null, '', '/home')
       setResultData(null)
       setFileName('')
       loadCachedResults()
