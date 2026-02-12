@@ -6,5 +6,7 @@ __pycache__/
 *.pdf
 *.csv
 *.json
+!package.json
+!package-lock.json
 cache/
 dev_scripts/
