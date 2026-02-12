@@ -22,6 +22,7 @@ const resultFilter = document.getElementById('result-filter');
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
+    loadCachedResults();
 });
 
 function setupEventListeners() {
@@ -115,6 +116,7 @@ async function processFile(file) {
 function displayResults(fileName) {
     // Hide upload, show results
     uploadSection.classList.add('hidden');
+    document.getElementById('cached-section').classList.add('hidden');
     resultsDashboard.classList.remove('hidden');
 
     // File info
@@ -134,6 +136,9 @@ function displayResults(fileName) {
 
     // Chart
     createGradeChart();
+
+    // College Analysis
+    displayCollegeAnalysis();
 
     // Table
     displayStudentsTable();
@@ -450,7 +455,164 @@ function resetUpload() {
         gradeChart.destroy();
         gradeChart = null;
     }
+
+    // Refresh cache list
+    loadCachedResults();
+}
+
+async function loadCachedResults() {
+    const cachedSection = document.getElementById('cached-section');
+    const cachedList = document.getElementById('cached-list');
+
+    try {
+        const response = await fetch('/api/cache');
+        if (!response.ok) return;
+
+        const results = await response.json();
+
+        if (results.length === 0) {
+            cachedSection.classList.add('hidden');
+            return;
+        }
+
+        cachedList.innerHTML = '';
+        results.forEach(item => {
+            const date = new Date(item.timestamp * 1000).toLocaleString();
+
+            const div = document.createElement('div');
+            div.className = 'cached-item glass-card';
+            div.onclick = () => loadCachedResult(item.hash);
+
+            div.innerHTML = `
+                <div class="cached-icon">📄</div>
+                <div class="cached-details">
+                    <h4 class="cached-name">${item.filename}</h4>
+                    <span class="cached-meta">${item.student_count} Students • ${item.college_count} Colleges</span>
+                    <span class="cached-date">${date}</span>
+                </div>
+            `;
+
+            cachedList.appendChild(div);
+        });
+
+        cachedSection.classList.remove('hidden');
+
+    } catch (error) {
+        console.error('Error loading cache:', error);
+    }
+}
+
+async function loadCachedResult(hash) {
+    // Show loading state
+    const cachedSection = document.getElementById('cached-section');
+    cachedSection.classList.add('hidden');
+    document.querySelector('.upload-content').classList.add('hidden');
+    uploadProgress.classList.remove('hidden');
+
+    try {
+        const response = await fetch(`/api/results/${hash}`);
+        if (!response.ok) throw new Error('Failed to load result');
+
+        resultData = await response.json();
+        const filename = resultData.meta?.filename || 'Cached Result';
+
+        displayResults(filename);
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error loading cached result');
+        resetUpload();
+    }
 }
 
 // Make analyzeStudent globally accessible
 window.analyzeStudent = analyzeStudent;
+
+function displayCollegeAnalysis() {
+    const section = document.getElementById('college-section');
+    const grid = document.getElementById('college-grid');
+    grid.innerHTML = '';
+
+    // Check if college stats exist
+    if (!resultData.statistics.college_statistics) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+    const stats = resultData.statistics.college_statistics;
+
+    Object.entries(stats).forEach(([collegeName, collegeStat], index) => {
+        // Create Card
+        const card = document.createElement('div');
+        card.className = 'glass-card college-card';
+
+        // Shorten college name for display
+        const shortName = collegeName.split(':')[1]?.trim() || collegeName;
+
+        card.innerHTML = `
+            <div class="college-header">
+                <h3>${shortName}</h3>
+                <div class="college-meta">
+                    <span class="college-total">${collegeStat.total_students} Students</span>
+                    <span class="college-pass-rate ${collegeStat.pass_percentage >= 50 ? 'success' : 'danger'}">
+                        ${collegeStat.pass_percentage}% Pass
+                    </span>
+                </div>
+            </div>
+            
+            <div class="college-content">
+                <div class="college-chart-container">
+                     <canvas id="college-chart-${index}"></canvas>
+                </div>
+                
+                <div class="college-subjects">
+                    <h4>Subject Performance (Pass %)</h4>
+                    <div class="subject-mini-list">
+                        ${Object.values(collegeStat.subject_stats).map(subj => `
+                            <div class="subject-mini-item">
+                                <span class="subj-name" title="${subj.name}">${subj.name.substring(0, 15)}${subj.name.length > 15 ? '...' : ''}</span>
+                                <div class="subj-bar-container">
+                                    <div class="subj-bar ${subj.pass_percentage < 50 ? 'danger' : ''}" style="width: ${subj.pass_percentage}%"></div>
+                                </div>
+                                <span class="subj-pct">${subj.pass_percentage}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        grid.appendChild(card);
+
+        // Initialize Pie Chart
+        new Chart(document.getElementById(`college-chart-${index}`), {
+            type: 'doughnut',
+            data: {
+                labels: ['Passed', 'Failed'],
+                datasets: [{
+                    data: [collegeStat.passed_students, collegeStat.failed_students],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            font: { size: 10 },
+                            padding: 10,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    });
+}

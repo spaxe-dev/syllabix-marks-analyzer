@@ -8,6 +8,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
 import tempfile
+import json
 from parse_results import parse_pdf
 import traceback
 
@@ -43,6 +44,25 @@ def parse_result_pdf():
         if not allowed_file(file.filename):
             return jsonify({'error': 'Invalid file type. Only PDF files are allowed'}), 400
         
+        # Calculate file hash for caching
+        import hashlib
+        import time
+        file_content = file.read()
+        file_hash = hashlib.sha256(file_content).hexdigest()
+        
+        # Check cache
+        cache_dir = os.path.join(app.root_path, 'cache')
+        os.makedirs(cache_dir, exist_ok=True)
+        cache_path = os.path.join(cache_dir, f"{file_hash}.json")
+        
+        if os.path.exists(cache_path):
+            print(f"Cache hit for {file.filename} ({file_hash})")
+            with open(cache_path, 'r', encoding='utf-8') as f:
+                return jsonify(json.load(f))
+        
+        # Reset file pointer for saving
+        file.seek(0)
+        
         # Save file temporarily
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -51,6 +71,18 @@ def parse_result_pdf():
         try:
             # Parse the PDF
             result = parse_pdf(filepath)
+            
+            # Add metadata for cache listing
+            result['meta'] = {
+                'filename': file.filename,
+                'timestamp': time.time(),
+                'hash': file_hash
+            }
+            
+            # Save to cache
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False)
+                
             return jsonify(result)
         finally:
             # Clean up uploaded file
@@ -59,6 +91,71 @@ def parse_result_pdf():
                 
     except Exception as e:
         traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/cache', methods=['GET'])
+def get_cached_results():
+    """List available cached results"""
+    try:
+        cache_dir = os.path.join(app.root_path, 'cache')
+        if not os.path.exists(cache_dir):
+            return jsonify([])
+        
+        results = []
+        for filename in os.listdir(cache_dir):
+            if not filename.endswith('.json'):
+                continue
+                
+            try:
+                filepath = os.path.join(cache_dir, filename)
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    # Read only the beginning to get metadata if possible, 
+                    # but since it's JSON we might need to load it. 
+                    # For small number of files, loading is fine.
+                    data = json.load(f)
+                    
+                    meta = data.get('meta', {})
+                    stats = data.get('statistics', {})
+                    
+                    # Fallback if meta is missing (old cache)
+                    if not meta:
+                        import time
+                        meta = {
+                            'filename': 'Unknown Result File',
+                            'timestamp': os.path.getmtime(filepath),
+                            'hash': filename.replace('.json', '')
+                        }
+                    
+                    results.append({
+                        'hash': meta.get('hash', filename.replace('.json', '')),
+                        'filename': meta.get('filename', 'Unknown'),
+                        'timestamp': meta.get('timestamp', 0),
+                        'student_count': stats.get('total_students', 0),
+                        'college_count': len(stats.get('college_statistics', {}))
+                    })
+            except Exception as e:
+                print(f"Error reading cache file {filename}: {e}")
+                
+        # Sort by newest first
+        results.sort(key=lambda x: x['timestamp'], reverse=True)
+        return jsonify(results)
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/results/<file_hash>', methods=['GET'])
+def get_cached_result(file_hash):
+    """Get specific cached result"""
+    try:
+        cache_dir = os.path.join(app.root_path, 'cache')
+        filepath = os.path.join(cache_dir, f"{file_hash}.json")
+        
+        if not os.path.exists(filepath):
+            return jsonify({'error': 'Result not found'}), 404
+            
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return jsonify(json.load(f))
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analyze-student/<seat_no>', methods=['POST'])

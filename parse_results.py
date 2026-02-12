@@ -112,31 +112,31 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
     for line in lines[1:]:
         line = line.strip()
         
-        # T1 line (Term Work): T1 18 P 17 P 21 P...
+        # Helper to extract marks handling ABS
+        def extract_marks(text_line):
+            # Matches: (digits) followed by (P or 0 F...) OR (ABS)
+            matches = re.findall(r'(?:(\d+)\s+(?:P|0\s+F\s+[\d.]+)|(ABS))', text_line)
+            # Return int for digits, string for ABS
+            return [int(m[0]) if m[0] else "ABS" for m in matches]
+
+        # T1 line (Term Work): T1 18 P ... or T1 ABS ...
         if line.startswith('T1 '):
-            # Extract numbers followed by P (pass)
-            t1_matches = re.findall(r'(\d+)\s+P', line)
-            t1_marks = [int(m) for m in t1_matches]
+            t1_marks = extract_marks(line)
         
-        # O1 line (Oral): O1 11 P 18 P 17 P
+        # O1 line (Oral): O1 11 P ...
         elif line.startswith('O1 '):
-            o1_matches = re.findall(r'(\d+)\s+P', line)
-            o1_marks = [int(m) for m in o1_matches]
+            o1_marks = extract_marks(line)
         
-        # E1 line (External): E1 8 0 F 0.0 15 0 F 0.0... with MARKS at end
+        # E1 line (External): E1 8 0 F ... or ABS
         elif line.startswith('E1 '):
-            # Pattern for failed: num 0 F 0.0 or passed: num P
-            e1_all = re.findall(r'(\d+)\s+(?:0\s+F\s+[\d.]+|P)', line)
-            e1_marks = [int(m) for m in e1_all]
+            e1_marks = extract_marks(line)
             
             # Extract total marks: (375) or similar
             marks_match = re.search(r'MARKS\s*$', line)
         
-        # I1 line (Internal): I1 11 0 F 0.0 13 P... with (marks) FAILED/PASSED
-        # Note: Sometimes FAILED/PASS is on the same line, sometimes on separate lines
+        # I1 line (Internal): I1 11 0 F ...
         elif line.startswith('I1 '):
-            i1_all = re.findall(r'(\d+)\s+(?:0\s+F\s+[\d.]+|P)', line)
-            i1_marks = [int(m) for m in i1_all]
+            i1_marks = extract_marks(line)
             
             # Try to extract result and total marks - may be on same line
             result_match = re.search(r'\((\d+)\)\s*(FAILED|PASSED|PASS)?', line)
@@ -333,6 +333,59 @@ def parse_pdf(pdf_path: str) -> Dict:
                     topper = {'seat_no': student.seat_no, 'name': student.name, 'marks': max_marks}
         if topper:
             subject_toppers[code] = topper
+            
+    # Calculate College Statistics
+    college_stats = {}
+    
+    # Group students by college
+    college_map = {}
+    for student in students:
+        # Extract short college name for grouping key if needed, or use full string
+        # Using full string for exactness
+        c_name = student.college
+        if c_name not in college_map:
+            college_map[c_name] = []
+        college_map[c_name].append(student)
+        
+    for c_name, c_students in college_map.items():
+        c_total = len(c_students)
+        c_passed = len([s for s in c_students if s.result == "PASS"])
+        c_pass_pct = (c_passed / c_total * 100) if c_total > 0 else 0
+        
+        # Subject-wise stats for this college
+        c_subjects = {}
+        for code in course_metadata.keys():
+            s_passed = 0
+            s_failed = 0
+            s_total_subj = 0
+            
+            for s in c_students:
+                # Find subject in student's list
+                subj = next((sub for sub in s.subjects if sub.code == code), None)
+                if subj:
+                    s_total_subj += 1
+                    if subj.passed:
+                        s_passed += 1
+                    else:
+                        s_failed += 1
+            
+            # Only include if students actually took this subject
+            if s_total_subj > 0:
+                c_subjects[code] = {
+                    'name': course_metadata[code]['name'],
+                    'total': s_total_subj,
+                    'passed': s_passed,
+                    'failed': s_failed,
+                    'pass_percentage': round((s_passed / s_total_subj * 100), 2)
+                }
+        
+        college_stats[c_name] = {
+            'total_students': c_total,
+            'passed_students': c_passed,
+            'failed_students': c_total - c_passed,
+            'pass_percentage': round(c_pass_pct, 2),
+            'subject_stats': c_subjects
+        }
     
     return {
         'course_metadata': course_metadata,
@@ -342,7 +395,8 @@ def parse_pdf(pdf_path: str) -> Dict:
             'passed_students': len(passed_students),
             'pass_percentage': round(pass_percentage, 2),
             'median_cgpa': round(median_cgpa, 2),
-            'subject_toppers': subject_toppers
+            'subject_toppers': subject_toppers,
+            'college_statistics': college_stats
         }
     }
 

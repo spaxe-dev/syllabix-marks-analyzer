@@ -1,0 +1,13 @@
+FOUND ON PAGE 7
+L13: Internal(40/16) Internal(30/12) Internal(30/12) Internal(40/16) Internal(40/16) Internal(30/12) Internal(25/10)
+L14: TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C TOT GP G C G*C
+L15: 1141100 DEEPRAJ PRAKASH ZORE Regular MALE (MU0341120250211727) 1251: Yashwantrao Bhonsale Institute of Technology
+L16: T1 ABS ABS 1 0 F 0.0 ABS ABS ABS ABS ABS
+L17: O1 ABS ABS ABS
+L18: E1 ABS ABS ABS ABS ABS ABS MARKS
+L19: I1 19 P 12 P 15 P 17 P ABS 14 P ... P (78) FAILED
+L20: TOT 19 0 F 3 0.0 12 0 F 2 0.0 15 0 F 2 0.0 17 0 F 2 0.0 0 F 3 0.0 0 F 0.5 0.0 1 0 F 0.5 0.0 0 F 1 0.0 0 F 1 0.0 14 0 F 2 0.0 0 F 1 0.0 0 F 1 0.0 0 F 2 0.0 ... 10 O 2 20.0 23 20.0 0.00000
+L21: SEAT NO NAME STATUS GENDER ERN COLLEGE
+L22: 10411 : Applied 10412 : Applied Physics 10413 : Applied 10414 : Engineering 10415 : Basic Electrical & 10416 : Applied Physics 10417 : Applied 10418 : Engineering 10419 : Basic Electrical 10420 : Professional and 10421 : Professional and 10422 : Engineering 10423 : C Programming 10424 : Induction cum TOTAL RESULT REMARK
+L23: Mathematics-I (TERM (THEORY) Chemistry (THEORY) Mechanics (THEORY) Electronics Engineering Lab (TERM WORK) Chemistry Lab (TERM Mechanics Lab (TERM & Electronics Communication Ethics Communication Ethics Workshop-I (TERM WORK (TERM WORK AND ORAL) Universal Human ( 800 )
+L24: WORK) (THEORY) WORK) WORK) Engineering Lab (TERM (THEORY) (TERM WORK) AND ORAL) Values (THEORY) ?C ?CG ?CG
