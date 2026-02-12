@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 *.txt
+!requirements.txt
 *.pdf
 *.csv
 *.json
