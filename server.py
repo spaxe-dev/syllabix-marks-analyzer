@@ -12,7 +12,7 @@ import json
 from parse_results import parse_pdf
 import traceback
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__, static_folder='frontend/dist/assets', static_url_path='/assets')
 CORS(app)
 
 # Configure upload settings
@@ -27,7 +27,15 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('frontend/dist', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    # Check if file exists in frontend/dist
+    if os.path.exists(os.path.join('frontend/dist', path)):
+        return send_from_directory('frontend/dist', path)
+    # Otherwise return index.html for React Router
+    return send_from_directory('frontend/dist', 'index.html')
 
 @app.route('/api/parse', methods=['POST'])
 def parse_result_pdf():
