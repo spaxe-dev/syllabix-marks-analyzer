@@ -16,6 +16,27 @@ function App() {
 
   useEffect(() => { loadCachedResults() }, [])
 
+  // Handle Browser Navigation (Path & Back Button)
+  useEffect(() => {
+    const handlePopState = (event) => {
+      // If we go back to root path, clear results
+      if (window.location.pathname === '/') {
+        setResultData(null)
+        setFileName('')
+        loadCachedResults()
+      }
+    }
+
+    // Check path on initial load
+    if (window.location.pathname === '/results' && !resultData) {
+      // If on /results but no data, redirect to home
+      window.history.replaceState(null, '', '/')
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
   // Landing page entrance animation
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
@@ -83,7 +104,12 @@ function App() {
     }
   }
 
-  const handleFileProcessed = (data, name) => { setResultData(data); setFileName(name) }
+  const handleFileProcessed = (data, name) => {
+    setResultData(data)
+    setFileName(name)
+    // Push history state so back button works AND URL updates
+    window.history.pushState({ hasResult: true }, '', '/results')
+  }
 
   const handleLoadCached = async (hash) => {
     try {
@@ -93,6 +119,8 @@ function App() {
         const data = await staticRes.json()
         setResultData(data)
         setFileName(data.meta?.filename || 'Cached Result')
+        // Push history state so back button works AND URL updates
+        window.history.pushState({ hasResult: true }, '', '/results')
         return
       }
 
@@ -103,10 +131,23 @@ function App() {
       const data = await res.json()
       setResultData(data)
       setFileName(data.meta?.filename || 'Cached Result')
+      // Push history state so back button works AND URL updates
+      window.history.pushState({ hasResult: true }, '', '/results')
     } catch (e) { console.error('Error:', e) }
   }
 
-  const handleReset = () => { setResultData(null); setFileName(''); loadCachedResults() }
+  const handleReset = () => {
+    // If we have history state, go back (triggering popstate logic)
+    if (window.history.state?.hasResult) {
+      window.history.back()
+    } else {
+      // Fallback manual reset
+      window.history.replaceState(null, '', '/')
+      setResultData(null)
+      setFileName('')
+      loadCachedResults()
+    }
+  }
 
   return (
     <>
