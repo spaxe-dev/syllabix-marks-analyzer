@@ -20,30 +20,33 @@ class StorageManager:
     def __init__(self, app):
         self.app = app
         self.mode = 'file'
-        self.conn = None
         
         # Check for DATABASE_URL env var (Render/Heroku/etc)
         self.db_url = os.environ.get('DATABASE_URL')
         if self.db_url:
-            try:
-                import psycopg2
-                from urllib.parse import urlparse
-                
-                # Check if it needs SSL (render requires it often)
-                self.conn = psycopg2.connect(self.db_url, sslmode='require')
-                self.mode = 'db'
-                print("✅ Connected to PostgreSQL Database")
-                self._init_db()
-            except Exception as e:
-                print(f"⚠️  Database connection failed ({str(e)}). Falling back to file storage.")
-                self.mode = 'file'
+            self.mode = 'db'
+            print("✅ Configured for PostgreSQL Database")
+            self._init_db()
         else:
             print("ℹ️  No DATABASE_URL found. Using local file storage.")
 
+    def _get_conn(self):
+        try:
+            import psycopg2
+            return psycopg2.connect(self.db_url, sslmode='require')
+        except Exception as e:
+            print(f"❌ DB Connection Error: {e}")
+            return None
+
     def _init_db(self):
         """Create table if not exists"""
+        if self.mode != 'db': return
+        
+        conn = self._get_conn()
+        if not conn: return
+        
         try:
-            cur = self.conn.cursor()
+            cur = conn.cursor()
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS results (
                     hash TEXT PRIMARY KEY,
@@ -53,17 +56,22 @@ class StorageManager:
                     data JSONB
                 );
             """)
-            self.conn.commit()
+            conn.commit()
             cur.close()
+            print("✅ DB Schema Initialized")
         except Exception as e:
             print(f"❌ Failed to init DB schema: {e}")
-            self.conn.rollback()
+        finally:
+            if conn: conn.close()
 
     def save(self, file_hash, result_data):
         if self.mode == 'db':
+            conn = self._get_conn()
+            if not conn: return False
+            
             try:
                 import json
-                cur = self.conn.cursor()
+                cur = conn.cursor()
                 meta = result_data.get('meta', {})
                 timestamp = datetime.fromtimestamp(meta.get('timestamp', time.time()))
                 
@@ -80,13 +88,14 @@ class StorageManager:
                     json.dumps(meta), 
                     json.dumps(result_data)
                 ))
-                self.conn.commit()
+                conn.commit()
                 cur.close()
                 return True
             except Exception as e:
                 print(f"❌ DB Save Error: {e}")
-                self.conn.rollback()
                 return False
+            finally:
+                if conn: conn.close()
         else:
             # File Mode
             try:
@@ -102,8 +111,11 @@ class StorageManager:
 
     def get(self, file_hash):
         if self.mode == 'db':
+            conn = self._get_conn()
+            if not conn: return None
+            
             try:
-                cur = self.conn.cursor()
+                cur = conn.cursor()
                 cur.execute("SELECT data FROM results WHERE hash = %s", (file_hash,))
                 row = cur.fetchone()
                 cur.close()
@@ -112,8 +124,9 @@ class StorageManager:
                 return None
             except Exception as e:
                 print(f"❌ DB Get Error: {e}")
-                self.conn.rollback()
                 return None
+            finally:
+                if conn: conn.close()
         else:
             # File Mode
             cache_path = os.path.join(self.app.root_path, 'cache', f"{file_hash}.json")
@@ -125,14 +138,11 @@ class StorageManager:
     def list(self):
         results = []
         if self.mode == 'db':
+            conn = self._get_conn()
+            if not conn: return []
+            
             try:
-                cur = self.conn.cursor()
-                # Fetch meta and calculate stats from it
-                cur.execute("SELECT hash, meta FROM results ORDER BY created_at DESC")
-                rows = cur.fetchall()
-                cur.close()
-                # Better query:
-                cur = self.conn.cursor()
+                cur = conn.cursor()
                 cur.execute("""
                     SELECT hash, meta, data->'statistics' as stats 
                     FROM results 
@@ -161,8 +171,9 @@ class StorageManager:
 
             except Exception as e:
                 print(f"❌ DB List Error: {e}")
-                self.conn.rollback()
                 return []
+            finally:
+                if conn: conn.close()
         else:
             # File Mode
             cache_dir = os.path.join(self.app.root_path, 'cache')
