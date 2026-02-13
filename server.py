@@ -131,33 +131,6 @@ class StorageManager:
                 cur.execute("SELECT hash, meta FROM results ORDER BY created_at DESC")
                 rows = cur.fetchall()
                 cur.close()
-                
-                for r in rows:
-                    h, meta = r
-                    # Ensure basic fields exist
-                    if not meta: meta = {}
-                    
-                    # If stored as string (unlikely with jsonb but possible), parse it
-                    if isinstance(meta, str):
-                        import json
-                        meta = json.loads(meta)
-
-                    # Get stats from data if needed? No, meta should have exam info now.
-                    # We might need to fetch `data->statistics` if not in meta.
-                    # Let's trust meta has exam info from our previous fix.
-                    
-                    # We need student count which is usually in statistics, not meta.
-                    # Let's adjust query to fetch statistics subset if possible, 
-                    # OR just ensure we save student_count to meta in future.
-                    # For now, let's just use what's in meta.
-                    
-                    # Actually, let's fetch full data for list to be safe OR update save to put stats in meta.
-                    # Fetching full data is heavy. Let's update the save logic later to ensure meta has counts.
-                    # For now, let's fetch data->statistics too.
-                    
-                    # RE-QUERY with clean optimized fetch
-                     pass 
-                
                 # Better query:
                 cur = self.conn.cursor()
                 cur.execute("""

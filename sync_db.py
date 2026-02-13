@@ -57,6 +57,14 @@ def sync_db_to_static():
         
         print(f"✅ Successfully synced {len(index_list)} results to {OUTPUT_FILE}")
 
+    except psycopg2.errors.UndefinedTable:
+        print("⚠️  Table 'results' does not exist yet. Configuring empty cache.")
+        # If table doesn't exist, we can't fetch. Just save empty list or exit gracefully.
+        # Ideally we should wait for server to init it, or init it here.
+        # But for sync script, let's just skip.
+        conn.rollback()
+        return
+
     except Exception as e:
         print(f"❌ Sync failed: {e}")
         exit(1)
