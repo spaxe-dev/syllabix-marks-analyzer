@@ -276,6 +276,7 @@ def parse_result_pdf():
         file_hash = hashlib.sha256(file_content).hexdigest()
         
         # Save file temporarily (we need it for re-parsing even if cached)
+        file.seek(0)  # RESET POINTER AFTER HASHING!
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
