@@ -275,11 +275,25 @@ def parse_result_pdf():
         file_content = file.read()
         file_hash = hashlib.sha256(file_content).hexdigest()
         
-        # Save file temporarily (we need it for re-parsing even if cached)
-        file.seek(0)  # RESET POINTER AFTER HASHING!
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        # Check cache via StorageManager
+        cached_result = storage.get(file_hash)
+        if cached_result:
+            print(f"Cache hit for {file.filename} ({file_hash})")
+            # Update filename and timestamp for existing cache
+            if 'meta' not in cached_result:
+                cached_result['meta'] = {}
+            
+            cached_result['meta']['filename'] = file.filename
+            cached_result['meta']['timestamp'] = time.time()
+            
+            # Re-save to update metadata
+            storage.save(file_hash, cached_result)
+            return jsonify(cached_result)
+        
+        # Reset file pointer properly for saving
+        file.seek(0)
+        
+        # Save file temporarily
         
         try:
             # Parse the PDF to get fresh metadata (fixes any old bad cache)
