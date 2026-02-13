@@ -310,8 +310,11 @@ def parse_result_pdf():
         file.seek(0)
         
         # Save file temporarily
-        
+        filepath = None
         try:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
             # Parse the PDF to get fresh metadata (fixes any old bad cache)
             result = parse_pdf(filepath)
             
