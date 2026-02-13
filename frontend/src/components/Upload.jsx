@@ -54,6 +54,10 @@ export default function Upload({ onFileProcessed }) {
     // Initialize Pyodide Worker
     useEffect(() => {
         workerRef.current = new Worker('/py_worker.js')
+
+        // Start background download immediately!
+        workerRef.current.postMessage({ type: 'init' })
+
         return () => workerRef.current?.terminate()
     }, [])
 

@@ -35,6 +35,15 @@ async function setupPyodide() {
 
 // 2. Message Handler
 self.onmessage = async (event) => {
+    // Warmup Command
+    if (event.data.type === 'init') {
+        try {
+            await setupPyodide();
+            console.log("🔥 Pyodide Warmed Up!");
+        } catch (e) { console.error("Warmup failed:", e); }
+        return;
+    }
+
     const { fileBuffer, filename } = event.data;
 
     try {
