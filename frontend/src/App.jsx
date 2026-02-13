@@ -134,7 +134,10 @@ function App() {
     window.history.pushState({ hasResult: true }, '', '/results')
   }
 
-  const handleLoadCached = async (hash) => {
+  const handleLoadCached = async (input) => {
+    // Handle both direct hash string and item object (from CachedResult click)
+    const hash = typeof input === 'object' ? input.hash : input
+
     try {
       // Try static file first
       const staticRes = await fetch(`/data/${hash}.json`)
