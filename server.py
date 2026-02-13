@@ -275,6 +275,22 @@ def parse_result_pdf():
         file_content = file.read()
         file_hash = hashlib.sha256(file_content).hexdigest()
         
+        print(f"📝 Upload Debug: Filename='{file.filename}', Size={len(file_content)}, Hash={file_hash}")
+        
+        # SPECIAL FIX: If this is the "Empty File Hash", DELETE IT from cache to force re-generation
+        # (This cleans up the "Electronics" ghost result if it was cached under the empty hash)
+        EMPTY_HASH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        if file_hash == EMPTY_HASH or storage.get(EMPTY_HASH):
+             print("⚠️  Empty Hash detected! Attempting to clear poisoned cache...")
+             try:
+                 if storage.mode == 'db':
+                     with storage._get_conn() as conn:
+                         with conn.cursor() as cur:
+                             cur.execute("DELETE FROM results WHERE hash = %s", (EMPTY_HASH,))
+                             conn.commit()
+                         print("✅ Deleted Empty Hash from DB.")
+             except: pass
+
         # Check cache via StorageManager
         cached_result = storage.get(file_hash)
         if cached_result:
