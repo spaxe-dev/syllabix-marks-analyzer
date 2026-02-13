@@ -48,6 +48,15 @@ export default function Upload({ onFileProcessed }) {
         return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave) }
     }, [])
 
+    const [statusMessage, setStatusMessage] = useState("Analyzing your results...")
+    const workerRef = useRef(null)
+
+    // Initialize Pyodide Worker
+    useEffect(() => {
+        workerRef.current = new Worker('/py_worker.js')
+        return () => workerRef.current?.terminate()
+    }, [])
+
     const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
     const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false) }
 
@@ -60,6 +69,7 @@ export default function Upload({ onFileProcessed }) {
 
     const processFile = async (file) => {
         setIsProcessing(true)
+        setStatusMessage("Initializing browser engine...")
 
         // Processing entrance animation
         if (cardRef.current) {
@@ -69,6 +79,41 @@ export default function Upload({ onFileProcessed }) {
                 duration: 0.5,
             })
         }
+
+        // Try Browser Parsing First
+        if (workerRef.current) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const buffer = e.target.result
+
+                // Listener for this specific job
+                const handleMsg = (event) => {
+                    const { status, result, error, message } = event.data
+
+                    if (status === 'loading' || status === 'processing') {
+                        setStatusMessage(message)
+                    } else if (status === 'complete') {
+                        workerRef.current.removeEventListener('message', handleMsg)
+                        onFileProcessed(result, file.name)
+                        setIsProcessing(false)
+                    } else if (status === 'error') {
+                        workerRef.current.removeEventListener('message', handleMsg)
+                        console.warn("Browser Parse Failed, falling back to Cloud:", error)
+                        fallbackToCloud(file)
+                    }
+                }
+
+                workerRef.current.addEventListener('message', handleMsg)
+                workerRef.current.postMessage({ fileBuffer: buffer, filename: file.name })
+            }
+            reader.readAsArrayBuffer(file)
+        } else {
+            fallbackToCloud(file)
+        }
+    }
+
+    const fallbackToCloud = async (file) => {
+        setStatusMessage("Falling back to Cloud Analysis (Local failed)...")
 
         const formData = new FormData()
         formData.append('file', file)
@@ -121,7 +166,7 @@ export default function Upload({ onFileProcessed }) {
                         <div style={{ width: '200px', height: '6px', background: 'var(--color-surface-3)', borderRadius: '999px', overflow: 'hidden' }}>
                             <div className="processing-bar" style={{ height: '100%', background: 'var(--color-accent)', borderRadius: '999px', width: '30%' }} />
                         </div>
-                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '15px', fontWeight: 500 }}>Analyzing your results…</p>
+                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '15px', fontWeight: 500 }}>{statusMessage}</p>
                         <style>{`
               @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
               .processing-bar { animation: slide 1.4s ease-in-out infinite; }
