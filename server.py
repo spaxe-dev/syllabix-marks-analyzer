@@ -275,25 +275,19 @@ def parse_result_pdf():
         file_content = file.read()
         file_hash = hashlib.sha256(file_content).hexdigest()
         
-        # Check cache via StorageManager
-        cached_result = storage.get(file_hash)
-        if cached_result:
-            print(f"Cache hit for {file.filename} ({file_hash})")
-            return jsonify(cached_result)
-        
-        # Reset file pointer for saving
-        file.seek(0)
-        
-        # Save file temporarily
+        # Save file temporarily (we need it for re-parsing even if cached)
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
         try:
-            # Parse the PDF
+            # Parse the PDF to get fresh metadata (fixes any old bad cache)
             result = parse_pdf(filepath)
             
-            # Add metadata for cache listing
+            # Check if we have existing data to merge, or just overwrite
+            # For now, let's overwrite metadata but maybe keep old stats if we wanted
+            # Actually, fresh parse is best.
+            
             exam_info = result.get('exam_info', {})
             result['meta'] = {
                 'filename': file.filename,
@@ -305,12 +299,10 @@ def parse_result_pdf():
                 'examination': exam_info.get('examination', '')
             }
             
-            # Save via StorageManager
-            if storage.save(file_hash, result):
-                return jsonify(result)
-            else:
-                return jsonify(result) # Return anyway even if save failed
-                
+            # Save via StorageManager (Upsert)
+            storage.save(file_hash, result)
+            return jsonify(result)
+            
         finally:
             # Clean up uploaded file
             if os.path.exists(filepath):
