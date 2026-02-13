@@ -11,6 +11,225 @@ import tempfile
 import json
 from parse_results import parse_pdf
 import traceback
+import hashlib
+import time
+from datetime import datetime
+
+# --- DATABASE / STORAGE MANAGER ---
+class StorageManager:
+    def __init__(self, app):
+        self.app = app
+        self.mode = 'file'
+        self.conn = None
+        
+        # Check for DATABASE_URL env var (Render/Heroku/etc)
+        self.db_url = os.environ.get('DATABASE_URL')
+        if self.db_url:
+            try:
+                import psycopg2
+                from urllib.parse import urlparse
+                
+                # Check if it needs SSL (render requires it often)
+                self.conn = psycopg2.connect(self.db_url, sslmode='require')
+                self.mode = 'db'
+                print("✅ Connected to PostgreSQL Database")
+                self._init_db()
+            except Exception as e:
+                print(f"⚠️  Database connection failed ({str(e)}). Falling back to file storage.")
+                self.mode = 'file'
+        else:
+            print("ℹ️  No DATABASE_URL found. Using local file storage.")
+
+    def _init_db(self):
+        """Create table if not exists"""
+        try:
+            cur = self.conn.cursor()
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS results (
+                    hash TEXT PRIMARY KEY,
+                    filename TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    meta JSONB,
+                    data JSONB
+                );
+            """)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            print(f"❌ Failed to init DB schema: {e}")
+            self.conn.rollback()
+
+    def save(self, file_hash, result_data):
+        if self.mode == 'db':
+            try:
+                import json
+                cur = self.conn.cursor()
+                meta = result_data.get('meta', {})
+                timestamp = datetime.fromtimestamp(meta.get('timestamp', time.time()))
+                
+                # Upsert (Insert or Do Nothing if exists)
+                cur.execute("""
+                    INSERT INTO results (hash, filename, created_at, meta, data)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (hash) DO UPDATE 
+                    SET meta = EXCLUDED.meta, data = EXCLUDED.data;
+                """, (
+                    file_hash, 
+                    meta.get('filename', 'Unknown'), 
+                    timestamp,
+                    json.dumps(meta), 
+                    json.dumps(result_data)
+                ))
+                self.conn.commit()
+                cur.close()
+                return True
+            except Exception as e:
+                print(f"❌ DB Save Error: {e}")
+                self.conn.rollback()
+                return False
+        else:
+            # File Mode
+            try:
+                cache_dir = os.path.join(self.app.root_path, 'cache')
+                os.makedirs(cache_dir, exist_ok=True)
+                cache_path = os.path.join(cache_dir, f"{file_hash}.json")
+                with open(cache_path, 'w', encoding='utf-8') as f:
+                    json.dump(result_data, f, ensure_ascii=False)
+                return True
+            except Exception as e:
+                print(f"❌ File Save Error: {e}")
+                return False
+
+    def get(self, file_hash):
+        if self.mode == 'db':
+            try:
+                cur = self.conn.cursor()
+                cur.execute("SELECT data FROM results WHERE hash = %s", (file_hash,))
+                row = cur.fetchone()
+                cur.close()
+                if row:
+                    return row[0] # data column is already dict/json
+                return None
+            except Exception as e:
+                print(f"❌ DB Get Error: {e}")
+                self.conn.rollback()
+                return None
+        else:
+            # File Mode
+            cache_path = os.path.join(self.app.root_path, 'cache', f"{file_hash}.json")
+            if os.path.exists(cache_path):
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            return None
+
+    def list(self):
+        results = []
+        if self.mode == 'db':
+            try:
+                cur = self.conn.cursor()
+                # Fetch meta and calculate stats from it
+                cur.execute("SELECT hash, meta FROM results ORDER BY created_at DESC")
+                rows = cur.fetchall()
+                cur.close()
+                
+                for r in rows:
+                    h, meta = r
+                    # Ensure basic fields exist
+                    if not meta: meta = {}
+                    
+                    # If stored as string (unlikely with jsonb but possible), parse it
+                    if isinstance(meta, str):
+                        import json
+                        meta = json.loads(meta)
+
+                    # Get stats from data if needed? No, meta should have exam info now.
+                    # We might need to fetch `data->statistics` if not in meta.
+                    # Let's trust meta has exam info from our previous fix.
+                    
+                    # We need student count which is usually in statistics, not meta.
+                    # Let's adjust query to fetch statistics subset if possible, 
+                    # OR just ensure we save student_count to meta in future.
+                    # For now, let's just use what's in meta.
+                    
+                    # Actually, let's fetch full data for list to be safe OR update save to put stats in meta.
+                    # Fetching full data is heavy. Let's update the save logic later to ensure meta has counts.
+                    # For now, let's fetch data->statistics too.
+                    
+                    # RE-QUERY with clean optimized fetch
+                     pass 
+                
+                # Better query:
+                cur = self.conn.cursor()
+                cur.execute("""
+                    SELECT hash, meta, data->'statistics' as stats 
+                    FROM results 
+                    ORDER BY created_at DESC
+                """)
+                rows = cur.fetchall()
+                cur.close()
+                
+                for r in rows:
+                    h, meta, stats = r
+                    if not meta: meta = {}
+                    if not stats: stats = {}
+                    
+                    results.append({
+                        'hash': h,
+                        'filename': meta.get('filename', 'Unknown'),
+                        'timestamp': meta.get('timestamp', 0),
+                        'student_count': stats.get('total_students', 0),
+                        'college_count': len(stats.get('college_statistics', {})),
+                        'program': meta.get('program'),
+                        'semester': meta.get('semester'),
+                        'scheme': meta.get('scheme'),
+                        'examination': meta.get('examination')
+                    })
+                return results
+
+            except Exception as e:
+                print(f"❌ DB List Error: {e}")
+                self.conn.rollback()
+                return []
+        else:
+            # File Mode
+            cache_dir = os.path.join(self.app.root_path, 'cache')
+            if not os.path.exists(cache_dir):
+                return []
+            
+            for filename in os.listdir(cache_dir):
+                if not filename.endswith('.json'): continue
+                try:
+                    filepath = os.path.join(cache_dir, filename)
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        meta = data.get('meta', {})
+                        stats = data.get('statistics', {})
+                        exam = data.get('exam_info', {})
+                        
+                        if not meta:
+                            meta = {'filename': 'Unknown', 'timestamp': os.path.getmtime(filepath), 'hash': filename.replace('.json', '')}
+                        
+                        if 'program' not in meta:
+                            meta['program'] = exam.get('program', 'Unknown')
+                            meta['semester'] = exam.get('semester', '')
+
+                        results.append({
+                            'hash': meta.get('hash', filename.replace('.json', '')),
+                            'filename': meta.get('filename', 'Unknown'),
+                            'timestamp': meta.get('timestamp', 0),
+                            'student_count': stats.get('total_students', 0),
+                            'college_count': len(stats.get('college_statistics', {})),
+                            'program': meta.get('program'),
+                            'semester': meta.get('semester'),
+                            'scheme': meta.get('scheme'),
+                            'examination': meta.get('examination')
+                        })
+                except: pass
+            
+            results.sort(key=lambda x: x['timestamp'], reverse=True)
+            return results
+
+storage = StorageManager(app)
 
 app = Flask(__name__, static_folder='frontend/dist/assets', static_url_path='/assets')
 CORS(app)
@@ -65,15 +284,18 @@ def parse_result_pdf():
         file_content = file.read()
         file_hash = hashlib.sha256(file_content).hexdigest()
         
-        # Check cache
-        cache_dir = os.path.join(app.root_path, 'cache')
-        os.makedirs(cache_dir, exist_ok=True)
-        cache_path = os.path.join(cache_dir, f"{file_hash}.json")
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'Invalid file type. Only PDF files are allowed'}), 400
         
-        if os.path.exists(cache_path):
+        # Calculate file hash for caching
+        file_content = file.read()
+        file_hash = hashlib.sha256(file_content).hexdigest()
+        
+        # Check cache via StorageManager
+        cached_result = storage.get(file_hash)
+        if cached_result:
             print(f"Cache hit for {file.filename} ({file_hash})")
-            with open(cache_path, 'r', encoding='utf-8') as f:
-                return jsonify(json.load(f))
+            return jsonify(cached_result)
         
         # Reset file pointer for saving
         file.seek(0)
@@ -88,17 +310,23 @@ def parse_result_pdf():
             result = parse_pdf(filepath)
             
             # Add metadata for cache listing
+            exam_info = result.get('exam_info', {})
             result['meta'] = {
                 'filename': file.filename,
                 'timestamp': time.time(),
-                'hash': file_hash
+                'hash': file_hash,
+                'program': exam_info.get('program', 'Unknown Program'),
+                'semester': exam_info.get('semester', ''),
+                'scheme': exam_info.get('scheme', ''),
+                'examination': exam_info.get('examination', '')
             }
             
-            # Save to cache
-            with open(cache_path, 'w', encoding='utf-8') as f:
-                json.dump(result, f, ensure_ascii=False)
+            # Save via StorageManager
+            if storage.save(file_hash, result):
+                return jsonify(result)
+            else:
+                return jsonify(result) # Return anyway even if save failed
                 
-            return jsonify(result)
         finally:
             # Clean up uploaded file
             if os.path.exists(filepath):
@@ -111,67 +339,15 @@ def parse_result_pdf():
 @app.route('/api/cache', methods=['GET'])
 def get_cached_results():
     """List available cached results"""
-    try:
-        cache_dir = os.path.join(app.root_path, 'cache')
-        if not os.path.exists(cache_dir):
-            return jsonify([])
-        
-        results = []
-        for filename in os.listdir(cache_dir):
-            if not filename.endswith('.json'):
-                continue
-                
-            try:
-                filepath = os.path.join(cache_dir, filename)
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    # Read only the beginning to get metadata if possible, 
-                    # but since it's JSON we might need to load it. 
-                    # For small number of files, loading is fine.
-                    data = json.load(f)
-                    
-                    meta = data.get('meta', {})
-                    stats = data.get('statistics', {})
-                    
-                    # Fallback if meta is missing (old cache)
-                    if not meta:
-                        import time
-                        meta = {
-                            'filename': 'Unknown Result File',
-                            'timestamp': os.path.getmtime(filepath),
-                            'hash': filename.replace('.json', '')
-                        }
-                    
-                    results.append({
-                        'hash': meta.get('hash', filename.replace('.json', '')),
-                        'filename': meta.get('filename', 'Unknown'),
-                        'timestamp': meta.get('timestamp', 0),
-                        'student_count': stats.get('total_students', 0),
-                        'college_count': len(stats.get('college_statistics', {}))
-                    })
-            except Exception as e:
-                print(f"Error reading cache file {filename}: {e}")
-                
-        # Sort by newest first
-        results.sort(key=lambda x: x['timestamp'], reverse=True)
-        return jsonify(results)
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+    return jsonify(storage.list())
 
 @app.route('/api/results/<file_hash>', methods=['GET'])
-def get_cached_result(file_hash):
-    """Get specific cached result"""
-    try:
-        cache_dir = os.path.join(app.root_path, 'cache')
-        filepath = os.path.join(cache_dir, f"{file_hash}.json")
-        
-        if not os.path.exists(filepath):
-            return jsonify({'error': 'Result not found'}), 404
-            
-        with open(filepath, 'r', encoding='utf-8') as f:
-            return jsonify(json.load(f))
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+def get_single_result(file_hash):
+    """Get a specific result by hash"""
+    result = storage.get(file_hash)
+    if result:
+        return jsonify(result)
+    return jsonify({'error': 'Result not found'}), 404
 
 @app.route('/api/analyze-student/<seat_no>', methods=['POST'])
 def analyze_student(seat_no):
@@ -199,16 +375,13 @@ def analyze_student(seat_no):
         # Calculate subject-wise comparison
         subject_comparison = []
         for i, subject in enumerate(target['subjects']):
-            if subject['total'] is None:
-                continue
-            
             # Get all marks for this subject
             subject_marks = []
             for s in students:
                 if i < len(s['subjects']) and s['subjects'][i]['total'] is not None:
                     subject_marks.append(s['subjects'][i]['total'])
             
-            if subject_marks:
+            if subject['total'] is not None and subject_marks:
                 avg_marks = sum(subject_marks) / len(subject_marks)
                 max_marks = max(subject_marks)
                 min_marks = min(subject_marks)
@@ -225,6 +398,20 @@ def analyze_student(seat_no):
                     'class_min': min_marks,
                     'rank': subject_rank,
                     'total_students': len(subject_marks)
+                })
+            else:
+                # Include subjects without total — show available component data
+                subject_comparison.append({
+                    'code': subject['code'],
+                    'name': subject['name'],
+                    'marks': subject['total'],
+                    'grade': subject.get('grade'),
+                    'passed': subject.get('passed'),
+                    'class_avg': None,
+                    'class_max': None,
+                    'class_min': None,
+                    'rank': None,
+                    'total_students': len(subject_marks) if subject_marks else None
                 })
         
         return jsonify({

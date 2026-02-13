@@ -41,15 +41,29 @@ export default function CachedResults({ results, onSelect }) {
             </h2>
 
             <style>{`
-        .cached-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        @media (min-width: 640px) { .cached-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .cached-grid { grid-template-columns: repeat(3, 1fr); } }
+        .cached-grid { display: flex; flex-direction: column; gap: 12px; }
       `}</style>
             <div className="cached-grid">
                 {results.map((item) => {
                     const date = new Date(item.timestamp * 1000).toLocaleDateString('en-IN', {
                         day: 'numeric', month: 'short', year: 'numeric',
                     })
+
+                    // improved display logic
+                    let title = item.filename
+                    let meta = date
+
+                    if (item.program && item.program !== 'Unknown' && item.program !== 'Unknown Program') {
+                        // Extract branch from parentheses if needed, or just show full program
+                        // e.g. "Bachelor of Engineering ( Computer Science... )"
+                        // Clean up spacing
+                        let prog = item.program.replace(/\(\s+/g, '(').replace(/\s+\)/g, ')')
+                        title = `${prog}`
+                        if (item.semester && !item.semester.includes('Unknown')) title += ` — ${item.semester}`
+
+                        meta = (item.examination && !item.examination.includes('Unknown')) ? item.examination : date
+                    }
+
                     return (
                         <button
                             key={item.hash}
@@ -59,26 +73,39 @@ export default function CachedResults({ results, onSelect }) {
                             className="card cached-card"
                             style={{
                                 textAlign: 'left', padding: '20px', cursor: 'pointer',
-                                display: 'flex', alignItems: 'flex-start', gap: '14px',
-                                transformOrigin: 'center bottom',
+                                display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '16px',
+                                transformOrigin: 'center bottom', width: '100%', alignItems: 'center'
                             }}
                         >
                             <div className="card-icon" style={{
                                 width: '40px', height: '40px', borderRadius: 'var(--radius-sm)',
                                 background: 'var(--color-surface-2)', border: '1px solid var(--color-border)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                flexShrink: 0, marginTop: '2px',
+                                flexShrink: 0, marginTop: '2px', color: 'var(--color-text)'
                             }}>
-                                <span style={{ fontSize: '16px' }}>📄</span>
+                                <span style={{ fontSize: '18px' }}>📄</span>
                             </div>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                                <p style={{ fontSize: '14px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '6px', color: 'var(--color-text)' }}>
-                                    {item.filename}
+                            <div style={{ minWidth: 0 }}>
+                                <p style={{ fontSize: '14px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '2px', color: 'var(--color-text)' }}>
+                                    {title}
                                 </p>
-                                <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>
-                                    {item.student_count} students · {item.college_count} colleges
+                                <p style={{ color: 'var(--color-primary)', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
+                                    {meta !== date ? meta : item.filename}
                                 </p>
-                                <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: 500 }}>{date}</p>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    <span style={{
+                                        color: 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 500,
+                                        background: 'var(--color-surface-2)', padding: '2px 6px', borderRadius: '4px'
+                                    }}>
+                                        {item.student_count} Students
+                                    </span>
+                                    {item.college_count > 0 && <span style={{
+                                        color: 'var(--color-text-secondary)', fontSize: '11px', fontWeight: 500,
+                                        background: 'var(--color-surface-2)', padding: '2px 6px', borderRadius: '4px'
+                                    }}>
+                                        {item.college_count} Colleges
+                                    </span>}
+                                </div>
                             </div>
                         </button>
                     )

@@ -1,0 +1,35 @@
+name: Sync DB to Static Cache
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+  workflow_dispatch:      # Allows manual trigger
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install Dependencies
+      run: |
+        pip install psycopg2-binary
+        
+    - name: Run Sync Script
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: python sync_db.py
+      
+    - name: Commit Changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "chore: update static cache from db"
+        file_pattern: frontend/public/data/index.json

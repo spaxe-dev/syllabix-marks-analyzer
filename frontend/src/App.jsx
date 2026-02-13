@@ -89,27 +89,42 @@ function App() {
   }, [resultData])
 
   const loadCachedResults = async () => {
+    let combined = []
+
+    // 1. Fetch Static Cache (Foundation results that are committed)
     try {
-      // Try static index first (fastest, no server wake)
       const staticRes = await fetch('/data/index.json')
       if (staticRes.ok) {
-        setCachedResults(await staticRes.json())
-        return
+        const staticData = await staticRes.json()
+        combined = [...staticData]
       }
-
-      // Fallback to API (wakes server)
-      const apiUrl = import.meta.env.VITE_API_URL || ''
-      const res = await fetch(`${apiUrl}/api/cache`)
-      if (res.ok) setCachedResults(await res.json())
     } catch (e) {
-      console.error('Cache load failed:', e)
-      // Try API if static failed completely
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL || ''
-        const res = await fetch(`${apiUrl}/api/cache`)
-        if (res.ok) setCachedResults(await res.json())
-      } catch (err) { console.error('API cache load failed:', err) }
+      // Ignore static fetch errors
     }
+
+    // 2. Fetch Live API Cache (New uploads from users)
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || ''
+      const apiRes = await fetch(`${apiUrl}/api/cache`)
+      if (apiRes.ok) {
+        const apiData = await apiRes.json()
+
+        // Merge and deduplicate based on hash
+        const existingHashes = new Set(combined.map(item => item.hash))
+        apiData.forEach(item => {
+          if (!existingHashes.has(item.hash)) {
+            combined.unshift(item) // Add new uploads to the top
+            existingHashes.add(item.hash)
+          }
+        })
+      }
+    } catch (e) {
+      console.error('API cache load failed:', e)
+    }
+
+    // Sort by timestamp desc to be sure
+    combined.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+    setCachedResults(combined)
   }
 
   const handleFileProcessed = (data, name) => {

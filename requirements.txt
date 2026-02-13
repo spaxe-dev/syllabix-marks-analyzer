@@ -4,3 +4,4 @@ pdfplumber
 gunicorn
 werkzeug
 openpyxl
+psycopg2-binary

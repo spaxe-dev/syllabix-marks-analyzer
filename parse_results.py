@@ -19,6 +19,10 @@ class SubjectMark:
     external: Optional[int] = None
     term_work: Optional[int] = None
     oral: Optional[int] = None
+    internal_grace: int = 0
+    external_grace: int = 0
+    term_work_grace: int = 0
+    oral_grace: int = 0
     total: Optional[int] = None
     grade: Optional[str] = None
     grade_points: Optional[float] = None
@@ -34,29 +38,90 @@ class Student:
     college: str
     subjects: List[SubjectMark]
     total_marks: int
-    max_marks: int = 800
+    max_marks: int = 0
     cgpa: float = 0.0
     result: str = "FAILED"
 
 def extract_course_metadata(page) -> Dict[str, dict]:
-    """Extract course info from page 1 (subject codes, names, credits, max marks)"""
+    """Extract course info from page 1 (subject codes, names, credits, max marks).
+    Also determines which components (I1, E1, T1, O1) each subject has
+    by checking if the corresponding columns have numeric values (not '...').
+    Expected column layout (13 cols):
+      0: Code, 1: Title, 2: Credits,
+      3: I1 Min, 4: I1 Max, 5: E1 Min, 6: E1 Max,
+      7: T1 Min, 8: T1 Max, 9: O1 Min, 10: O1 Max,
+      11: Total Min, 12: Total Max
+    """
     tables = page.extract_tables()
     courses = {}
     
     if tables:
         for table in tables:
             for row in table[2:]:  # Skip header rows
-                if row and row[0] and row[0].isdigit():
-                    code = row[0]
-                    name = row[1] if len(row) > 1 else ""
+                if row and row[0] and row[0].strip().isdigit():
+                    code = row[0].strip()
+                    name = row[1].strip() if len(row) > 1 and row[1] else ""
                     credits = float(row[2]) if len(row) > 2 and row[2] and row[2] != '...' else 0
                     max_marks = float(row[-1]) if row[-1] and row[-1] != '...' else 0
+                    
+                    # Determine which components this subject has
+                    # A component is present if its Max Marks column is numeric (not '...')
+                    def has_component(col_idx):
+                        if len(row) > col_idx and row[col_idx]:
+                            val = row[col_idx].strip()
+                            return val != '...' and val.replace('.', '', 1).isdigit()
+                        return False
+                    
                     courses[code] = {
                         'name': name,
                         'credits': credits,
-                        'max_marks': max_marks
+                        'max_marks': max_marks,
+                        'has_i1': has_component(4),   # I1 Max Marks column
+                        'has_e1': has_component(6),   # E1 Max Marks column
+                        'has_t1': has_component(8),   # T1 Max Marks column
+                        'has_o1': has_component(10),  # O1 Max Marks column
                     }
     return courses
+
+def extract_exam_info(page) -> Dict[str, str]:
+    """Extract exam metadata (Program, Semester, Scheme, Date) from page 1 header"""
+    text = page.extract_text()
+    if not text:
+        return {}
+    
+    # Try to find the exam header line
+    # Format: OFFICE REGISTER FOR THE ... ( Semester - X ) ( Scheme ) EXAMINATION HELD IN ...
+    info = {
+        'program': 'Unknown Program',
+        'semester': 'Unknown Semester',
+        'scheme': 'Unknown Scheme',
+        'examination': 'Unknown Examination'
+    }
+    
+    # Clean up text to single line for easier regex
+    clean_text = ' '.join(text.split()[:200]) # Look at first 200 words
+    
+    # Extract Program - capture everything until " ( Semester"
+    prog_match = re.search(r'OFFICE REGISTER FOR THE\s+(.+?)\s*\(\s*Semester', clean_text, re.IGNORECASE)
+    if prog_match:
+        info['program'] = prog_match.group(1).strip()
+        
+    # Extract Semester
+    sem_match = re.search(r'\(\s*Semester\s*-\s*([IVX]+)\s*\)', clean_text, re.IGNORECASE)
+    if sem_match:
+        info['semester'] = f"Sem {sem_match.group(1)}"
+        
+    # Extract Scheme
+    scheme_match = re.search(r'\(\s*(NEP[^)]*)\s*\)', clean_text, re.IGNORECASE)
+    if scheme_match:
+        info['scheme'] = scheme_match.group(1).strip()
+        
+    # Extract Exam Date
+    date_match = re.search(r'EXAMINATION HELD IN\s+([A-Z]+\s+\d{4})', clean_text, re.IGNORECASE)
+    if date_match:
+        info['examination'] = date_match.group(1).strip()
+        
+    return info
 
 def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Student]:
     """Parse a block of lines belonging to one student"""
@@ -112,12 +177,18 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
     for line in lines[1:]:
         line = line.strip()
         
-        # Helper to extract marks handling ABS
+        # Helper to extract marks handling ABS, + (carried forward), and @N (grace marks)
         def extract_marks(text_line):
-            # Matches: (digits) followed by (P or 0 F...) OR (ABS)
-            matches = re.findall(r'(?:(\d+)\s+(?:P|0\s+F\s+[\d.]+)|(ABS))', text_line)
-            # Return int for digits, string for ABS
-            return [int(m[0]) if m[0] else "ABS" for m in matches]
+            # Matches: (digits)(optional +) (optional @grace) followed by (optional +) (P or 0 F...) OR (ABS)
+            # Examples: '21 P', '21 + P', '21 @3 P', '16 + @2 P', 'ABS', '8 0 F 0.0'
+            matches = re.findall(r'(?:(\d+)\+?\s+(?:@(\d+)\s+)?\+?\s*(?:P|0\s+F\s+[\d.]+)|(ABS))', text_line)
+            result = []
+            for m in matches:
+                if m[2]:  # ABS
+                    result.append({'mark': 'ABS', 'grace': 0})
+                else:
+                    result.append({'mark': int(m[0]), 'grace': int(m[1]) if m[1] else 0})
+            return result
 
         # T1 line (Term Work): T1 18 P ... or T1 ABS ...
         if line.startswith('T1 '):
@@ -156,13 +227,14 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
         # TOT line: subject totals with grades
         elif line.startswith('TOT '):
             # Pattern: TOT 37 0 F 3 0.0 (total grade_point grade credits cxg)
-            # or: TOT 65 0 F 3 0.0 46 7 B+ 2 14.0...
+            # or: TOT 65+ 0 F 3 0.0 46 7 B+ 2 14.0...
+            # Total can be digits(optional +) or ... (ellipsis for carried-forward subjects)
             # Extract all subject totals: (marks, grade_point, grade, credits, cxg)
-            tot_pattern = r'(\d+)\s+(\d+)\s+([A-Z+]+|F)\s+([\d.]+)\s+([\d.]+)'
+            tot_pattern = r'(?:(\d+)\+?|\.\.\.?)\s+(\d+)\s+([A-Z+]+|F)\s+([\d.]+)\s+([\d.]+)'
             tot_matches = re.findall(tot_pattern, line)
             for match in tot_matches:
                 tot_data.append({
-                    'total': int(match[0]),
+                    'total': int(match[0]) if match[0] else None,
                     'grade_point': int(match[1]),
                     'grade': match[2],
                     'credits': float(match[3]),
@@ -174,7 +246,11 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
             cgpa_match = re.search(r'\d+\s+[\d.]+\s+([\d.]+)\s*$', line)
             if cgpa_match:
                 try:
-                    cgpa = float(cgpa_match.group(1))
+                    candidate = float(cgpa_match.group(1))
+                    # CGPA must be between 0 and 10 — if not, it's likely
+                    # the sum_cxg value from a line that was split by pdfplumber
+                    if 0 <= candidate <= 10:
+                        cgpa = candidate
                 except:
                     pass
         
@@ -187,24 +263,17 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
                     cgpa = val
             except:
                 pass
-    # Build subject marks with component mapping
-    # Subject structure varies - need to map components correctly
-    # T1 (Term Work): subjects 10411, 10412, 10413, 10414, 10415, 10416, 10417, 10418, 10419, 10421, 10422, 10423 (in order they appear)
-    # O1 (Oral): subjects 10418, 10419, 10423 (labs with oral)
-    # E1 (External): subjects 10411, 10412, 10413, 10414, 10415, 10420 (theory subjects)
-    # I1 (Internal): subjects 10411, 10412, 10413, 10414, 10415, 10420, 10424 (theory + induction)
-    
+    # Build subject marks with DYNAMIC component mapping from course_metadata
+    # The metadata table on page 1 tells us which components each subject has
     subjects = []
-    subject_codes = ['10411', '10412', '10413', '10414', '10415', '10416', '10417', 
-                     '10418', '10419', '10420', '10421', '10422', '10423', '10424']
+    subject_codes = list(course_metadata.keys())  # Dynamic: use codes from metadata
     
-    # Define which subjects have which components (in order of appearance in T1/O1/E1/I1 lines)
-    # T1 appears for: 10411, 10412, 10413, 10414, 10415, 10416, 10417, 10421, 10422 (9 subjects usually)
-    # But actual order may vary - we use positional mapping based on tot_data order
-    t1_subjects = ['10411', '10412', '10413', '10414', '10415', '10416', '10417', '10421', '10422']
-    o1_subjects = ['10418', '10419', '10423']
-    e1_subjects = ['10411', '10412', '10413', '10414', '10415', '10420']
-    i1_subjects = ['10411', '10412', '10413', '10414', '10415', '10420', '10424']
+    # Build dynamic component-to-subject mapping from metadata
+    # For each component type, collect which subject codes (in order) have that component
+    t1_subject_codes = [c for c in subject_codes if course_metadata[c].get('has_t1', False)]
+    o1_subject_codes = [c for c in subject_codes if course_metadata[c].get('has_o1', False)]
+    e1_subject_codes = [c for c in subject_codes if course_metadata[c].get('has_e1', False)]
+    i1_subject_codes = [c for c in subject_codes if course_metadata[c].get('has_i1', False)]
     
     # Create index trackers for each component
     t1_idx = 0
@@ -221,11 +290,34 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
             credits=meta['credits'],
         )
         
-        # Assign component marks based on subject type
-        # T1 (Term Work) - most theory and some lab subjects
-        if t1_idx < len(t1_marks):
-            subject.term_work = t1_marks[t1_idx]
+        # Assign component marks based on dynamic metadata
+        # T1 (Term Work)
+        if code in t1_subject_codes and t1_idx < len(t1_marks):
+            entry = t1_marks[t1_idx]
+            subject.term_work = entry['mark'] if entry['mark'] != 'ABS' else None
+            subject.term_work_grace = entry['grace']
             t1_idx += 1
+        
+        # O1 (Oral)
+        if code in o1_subject_codes and o1_idx < len(o1_marks):
+            entry = o1_marks[o1_idx]
+            subject.oral = entry['mark'] if entry['mark'] != 'ABS' else None
+            subject.oral_grace = entry['grace']
+            o1_idx += 1
+        
+        # E1 (External)
+        if code in e1_subject_codes and e1_idx < len(e1_marks):
+            entry = e1_marks[e1_idx]
+            subject.external = entry['mark'] if entry['mark'] != 'ABS' else None
+            subject.external_grace = entry['grace']
+            e1_idx += 1
+        
+        # I1 (Internal)
+        if code in i1_subject_codes and i1_idx < len(i1_marks):
+            entry = i1_marks[i1_idx]
+            subject.internal = entry['mark'] if entry['mark'] != 'ABS' else None
+            subject.internal_grace = entry['grace']
+            i1_idx += 1
         
         # Assign totals and grades from tot_data if available
         if i < len(tot_data):
@@ -235,25 +327,6 @@ def parse_student_block(lines: List[str], course_metadata: Dict) -> Optional[Stu
             subject.passed = tot_data[i]['grade'] != 'F'
         
         subjects.append(subject)
-    
-    # Now assign O1, E1, I1 marks based on subject type
-    # O1 goes to labs with oral (10418, 10419, 10423)
-    o1_target_indices = [7, 8, 12]  # indices in subject_codes for 10418, 10419, 10423
-    for idx, subj_idx in enumerate(o1_target_indices):
-        if idx < len(o1_marks) and subj_idx < len(subjects):
-            subjects[subj_idx].oral = o1_marks[idx]
-    
-    # E1 goes to theory subjects (10411-10415, 10420)
-    e1_target_indices = [0, 1, 2, 3, 4, 9]  # indices for 10411-10415, 10420
-    for idx, subj_idx in enumerate(e1_target_indices):
-        if idx < len(e1_marks) and subj_idx < len(subjects):
-            subjects[subj_idx].external = e1_marks[idx]
-    
-    # I1 goes to theory subjects + 10424 (10411-10415, 10420, 10424)
-    i1_target_indices = [0, 1, 2, 3, 4, 9, 13]  # indices for 10411-10415, 10420, 10424
-    for idx, subj_idx in enumerate(i1_target_indices):
-        if idx < len(i1_marks) and subj_idx < len(subjects):
-            subjects[subj_idx].internal = i1_marks[idx]
     
     return Student(
         seat_no=seat_no,
@@ -272,12 +345,40 @@ def parse_pdf(pdf_path: str) -> Dict:
     """Main function to parse the entire PDF"""
     
     students = []
+    students = []
     course_metadata = {}
+    exam_info = {}
     
     with pdfplumber.open(pdf_path) as pdf:
-        # Page 1: Extract course metadata
+        # Page 1: Extract course metadata and exam info
         if pdf.pages:
             course_metadata = extract_course_metadata(pdf.pages[0])
+            exam_info = extract_exam_info(pdf.pages[0])
+        
+        # Calculate total max marks from metadata (sum of all subject max marks)
+        total_max_marks = int(sum(m['max_marks'] for m in course_metadata.values()))
+        
+        # Build a set of subject codes for filtering page headers
+        subject_code_set = set(course_metadata.keys())
+        
+        # Generic skip patterns for page headers and footers
+        skip_keywords = [
+            'SEAT NO', 'University Of Mumbai', 'PAGE :', '#:', 'ADC:',
+            '%Marks', 'Grade O', 'GRADE POINT', 'NEP 2020',
+            'TERM WORK', 'ORAL (', 'External (', 'Internal(',
+            'TOT GP', 'õC', 'õCG',
+        ]
+        
+        def is_subject_header_line(line):
+            """Check if a line is a repeated page header listing subject codes.
+            These look like: '10411 : Applied 10412 : Applied Physics ...'
+            or continuation lines like: 'Mathematics-I (TERM ...'
+            """
+            # Subject code header: starts with a known subject code
+            first_token = line.split()[0] if line.split() else ''
+            if first_token.rstrip(':') in subject_code_set:
+                return True
+            return False
         
         # Pages 2+: Extract student data
         for page_num, page in enumerate(pdf.pages[1:], start=2):
@@ -297,18 +398,20 @@ def parse_pdf(pdf_path: str) -> Dict:
                     if current_block:
                         student = parse_student_block(current_block, course_metadata)
                         if student:
+                            student.max_marks = total_max_marks
                             students.append(student)
                     current_block = [line]
                 elif current_block:
-                    # Skip header lines and footer lines
-                    if not any(skip in line for skip in ['SEAT NO', 'University Of Mumbai', 'PAGE :', '#:', 'ADC:', '%Marks', 'Grade O', 'GRADE POINT', 'NEP 2020']):
-                        if not line.startswith('10411') and not line.startswith('10412'):
+                    # Skip header lines, footer lines, and subject header lines
+                    if not any(skip in line for skip in skip_keywords):
+                        if not is_subject_header_line(line):
                             current_block.append(line)
             
             # Don't forget the last block
             if current_block:
                 student = parse_student_block(current_block, course_metadata)
                 if student:
+                    student.max_marks = total_max_marks
                     students.append(student)
     
     # Calculate statistics
@@ -388,6 +491,7 @@ def parse_pdf(pdf_path: str) -> Dict:
         }
     
     return {
+        'exam_info': exam_info,
         'course_metadata': course_metadata,
         'students': [asdict(s) for s in students],
         'statistics': {

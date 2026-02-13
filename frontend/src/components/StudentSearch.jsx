@@ -91,18 +91,26 @@ export default function StudentSearch({ students, externalSeatNo, onExternalCons
 
         const subjectComparison = student.subjects
             .map((sub, i) => {
-                if (!sub.total) return null
+                // Always include the subject, even if total is null
                 const marks = students.filter((s) => s.subjects[i]?.total).map((s) => s.subjects[i].total)
-                if (!marks.length) return null
+                if (sub.total && marks.length) {
+                    return {
+                        ...sub,
+                        avg: (marks.reduce((a, b) => a + b, 0) / marks.length).toFixed(1),
+                        max: Math.max(...marks),
+                        rank: marks.filter((m) => m > sub.total).length + 1,
+                        total_students: marks.length,
+                    }
+                }
+                // Subject exists but total is null — still show it with available data
                 return {
                     ...sub,
-                    avg: (marks.reduce((a, b) => a + b, 0) / marks.length).toFixed(1),
-                    max: Math.max(...marks),
-                    rank: marks.filter((m) => m > sub.total).length + 1,
-                    total_students: marks.length,
+                    avg: null,
+                    max: null,
+                    rank: null,
+                    total_students: marks.length || null,
                 }
             })
-            .filter(Boolean)
 
         setResult({ error: false, student, rank, percentile, subjects: subjectComparison })
     }
@@ -243,23 +251,45 @@ export default function StudentSearch({ students, externalSeatNo, onExternalCons
                                                 <td style={{ padding: '14px 18px', fontSize: '13px', fontWeight: 600, color: 'var(--color-text)' }} title={s.name}>
                                                     {s.name.length > 26 ? s.name.substring(0, 24) + '…' : s.name}
                                                 </td>
-                                                <td style={{ padding: '14px 18px', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{s.term_work ?? '—'}</td>
-                                                <td style={{ padding: '14px 18px', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{s.oral ?? '—'}</td>
-                                                <td style={{ padding: '14px 18px', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{s.external ?? '—'}</td>
-                                                <td style={{ padding: '14px 18px', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{s.internal ?? '—'}</td>
-                                                <td style={{ padding: '14px 18px', fontSize: '15px', fontWeight: 800, color: 'var(--color-text)' }}>{s.total}</td>
+                                                {(() => {
+                                                    const renderMark = (mark, grace) => {
+                                                        if (mark == null) return '—'
+                                                        return (
+                                                            <span>
+                                                                {mark}
+                                                                {grace > 0 && (
+                                                                    <span style={{ fontSize: '10px', color: '#F59E0B', fontWeight: 700, marginLeft: '2px' }}>
+                                                                        @{grace}
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        )
+                                                    }
+                                                    const cellStyle = { padding: '14px 18px', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }
+                                                    return (
+                                                        <>
+                                                            <td style={cellStyle}>{renderMark(s.term_work, s.term_work_grace)}</td>
+                                                            <td style={cellStyle}>{renderMark(s.oral, s.oral_grace)}</td>
+                                                            <td style={cellStyle}>{renderMark(s.external, s.external_grace)}</td>
+                                                            <td style={cellStyle}>{renderMark(s.internal, s.internal_grace)}</td>
+                                                        </>
+                                                    )
+                                                })()}
+                                                <td style={{ padding: '14px 18px', fontSize: '15px', fontWeight: 800, color: 'var(--color-text)' }}>{s.total ?? '—'}</td>
                                                 <td style={{ padding: '14px 18px' }}>
-                                                    <span style={{
-                                                        fontSize: '12px', fontWeight: 800, padding: '3px 10px', borderRadius: '6px',
-                                                        fontFamily: 'var(--font-body)',
-                                                        background: gradeColors[s.grade]?.bg || 'transparent',
-                                                        color: gradeColors[s.grade]?.color || '#FAFAF9',
-                                                    }}>
-                                                        {s.grade}
-                                                    </span>
+                                                    {s.grade ? (
+                                                        <span style={{
+                                                            fontSize: '12px', fontWeight: 800, padding: '3px 10px', borderRadius: '6px',
+                                                            fontFamily: 'var(--font-body)',
+                                                            background: gradeColors[s.grade]?.bg || 'transparent',
+                                                            color: gradeColors[s.grade]?.color || '#FAFAF9',
+                                                        }}>
+                                                            {s.grade}
+                                                        </span>
+                                                    ) : '—'}
                                                 </td>
                                                 <td style={{ padding: '14px 18px', fontSize: '12px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-                                                    #{s.rank}/{s.total_students}
+                                                    {s.rank != null ? `#${s.rank}/${s.total_students}` : '—'}
                                                 </td>
                                             </tr>
                                         ))}
