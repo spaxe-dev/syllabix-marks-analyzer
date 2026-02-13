@@ -202,10 +202,10 @@ class StorageManager:
             results.sort(key=lambda x: x['timestamp'], reverse=True)
             return results
 
-storage = StorageManager(app)
-
 app = Flask(__name__, static_folder='frontend/dist/assets', static_url_path='/assets')
 CORS(app)
+
+storage = StorageManager(app)
 
 # Configure upload settings
 UPLOAD_FOLDER = tempfile.gettempdir()
