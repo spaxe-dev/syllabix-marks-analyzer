@@ -131,8 +131,15 @@ class StorageManager:
             # File Mode
             cache_path = os.path.join(self.app.root_path, 'cache', f"{file_hash}.json")
             if os.path.exists(cache_path):
-                with open(cache_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+                try:
+                    with open(cache_path, 'r', encoding='utf-8') as f:
+                        return json.load(f)
+                except Exception as e:
+                    print(f"⚠️  Corrupted cache file {file_hash}: {e}")
+                    try:
+                        os.remove(cache_path)
+                        print(f"🗑️  Deleted corrupted cache file.")
+                    except: pass
             return None
 
     def list(self):
@@ -268,12 +275,7 @@ def parse_result_pdf():
         file_content = file.read()
         file_hash = hashlib.sha256(file_content).hexdigest()
         
-        if not allowed_file(file.filename):
-            return jsonify({'error': 'Invalid file type. Only PDF files are allowed'}), 400
-        
-        # Calculate file hash for caching
-        file_content = file.read()
-        file_hash = hashlib.sha256(file_content).hexdigest()
+
         
         print(f"📝 Upload Debug: Filename='{file.filename}', Size={len(file_content)}, Hash={file_hash}")
         

@@ -13,7 +13,6 @@ frontend/dist/
 # Ignore dynamic cache folder (server handles this)
 cache/
 # Ignore local PDFs
-*.pdf
 # Ignore local outputs
 parsed_results.json
 dev_scripts/
@@ -22,3 +21,5 @@ dev_scripts/
 .DS_Store
 .vscode/
 .idea/
+
+*.pdf
